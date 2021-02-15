@@ -1,5 +1,5 @@
 ---
-typora-root-url: img
+
 ---
 
 # Spring Boot
@@ -16,7 +16,7 @@ Go to [click here](https://start.spring.io/) unzip the file, now this file is th
 
 Make sure your project is under java 1.8 by check "File - Project Structure" in IntelliJ.
 
-![project structure](/img/project_structure.png)
+![project structure](img/project_structure.png)
 
 
 
@@ -33,7 +33,7 @@ Add dependencies in build.gradle from [here](https://mvnrepository.com/artifact/
 
 Every time when you add new dependency, you will have a gradle icon:
 
-<img src="/img/load_dependencies.png" alt="load icon" style="zoom:50%;" />
+<img src="img/load_dependencies.png" alt="load icon" style="zoom:50%;" />
 
 
 
