@@ -16,7 +16,7 @@
 
 what is container? check this diagram.
 
-![container architecture](img\VMs-and-Containers.jpg)
+![container architecture](img/VMs-and-Containers.jpg)
 
 #### `Docker`
 
@@ -38,7 +38,7 @@ A **`Docker image`** is a read-only template that contains a set of instructions
 
 - `docker build`, `docker pull` and `docker run`
 
-![start docker](img\start_docker.jpg)
+![start docker](img/start_docker.jpg)
 
 - `docker ps --format "table {{.Names}}\t{{Image}}"`
 
