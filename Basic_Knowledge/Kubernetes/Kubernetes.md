@@ -87,7 +87,7 @@ managing other `worker nodes` and balance the workloads. Admin can access `maste
   - For this purpose, the scheduler must know the resource requirements, resource availability of the `nodes`, and other user-provided constraints in order to maximize the proper resource utilization.
 - `controller manager`: state
 
-[details](
+[details](https://kubernetes.io/docs/concepts/overview/components/#control-plane-components)
 
 ### `cluster`
 
@@ -136,8 +136,6 @@ A `Deployment` is a higher-order abstraction that controls deploying and maintai
 ### `CRD`
 
 `CustomResourceDefinitions`, or `CRDs`, provide an extension mechanism that cluster operators and developers can use to create their own resource types.
-
-https://kubernetes.io/docs/concepts/overview/components/#control-plane-components)
 
 ### `manifest file`
 
@@ -525,4 +523,4 @@ access to the `Nginx Pod`
 
 ### reference
 
-- check [options](
+- check [options](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#options)

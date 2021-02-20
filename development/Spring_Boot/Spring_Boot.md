@@ -39,3 +39,40 @@ Every time when you add new dependency, you will have a gradle icon:
 
 click on the icon to load the new dependency.
 
+
+
+## annotation
+
+### `@Bean`
+
+To declare a bean, simply annotate a method with the `@Bean` annotation. When JavaConfig encounters such a method, it will execute that method and register the return value as a bean within a `BeanFactory`. By default, the bean name will be the same as the method name. 
+
+[reference here](https://docs.spring.io/spring-javaconfig/docs/1.0.0.M4/reference/html/ch02s02.html)
+
+### `@Component`
+
+`@Component` is the most generic Spring annotation. A Java class decorated with `@Component` is found during classpath scanning and registered in the context as a Spring bean. `@Service`, `@Repository`, and `@Controller` are specializations of `@Component`, which are used for more specific cases.
+
+`@ComponentScan` ensures that the classes decorated with `@Component` are found and registered as Spring beans. `@ComponentScan` is automatically included with `@SpringBootApplication`. 
+
+[reference here](https://zetcode.com/springboot/component/)
+
+## spring boot security
+
+### Libraries
+
+#### `HttpSecurity`
+
+- `cors()`: add `CorsFilter`
+- `csrf()``
+
+#### `io.jsonwebtoken`
+
+- [JwtParser](http://javadox.com/io.jsonwebtoken/jjwt/0.4/io/jsonwebtoken/JwtParser.html)
+  - [`setSigningKey`](http://javadox.com/io.jsonwebtoken/jjwt/0.4/io/jsonwebtoken/JwtParser.html#setSigningKey-byte:A-)
+  - [`parseClaimsJws`](
+
+## Question need to be finished
+
+- what is bean
+- what is IoC container
