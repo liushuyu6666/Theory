@@ -4,10 +4,6 @@
 
 # Spring Boot
 
-## catalog
-
-
-
 ## start
 
 ### creat project
@@ -64,13 +60,47 @@ To declare a bean, simply annotate a method with the `@Bean` annotation. When Ja
 #### `HttpSecurity`
 
 - `cors()`: add `CorsFilter`
-- `csrf()``
+- `csrf()`
 
 #### `io.jsonwebtoken`
 
 - [JwtParser](http://javadox.com/io.jsonwebtoken/jjwt/0.4/io/jsonwebtoken/JwtParser.html)
   - [`setSigningKey`](http://javadox.com/io.jsonwebtoken/jjwt/0.4/io/jsonwebtoken/JwtParser.html#setSigningKey-byte:A-)
   - [`parseClaimsJws`](
+
+
+
+### Filter
+
+#### Filter function
+
+- `JWTAuthencicationFilter`
+
+  Two important components, `attemptAuthentication`  try to verify the `jwt`  and `successfulAuthentication` generate to `jwt`. 
+
+  - `attemptAuthentication` : 
+
+    1. get `username` and `password` from `req` .
+
+    2. load `usernamePasswordAuthenticationToken (class: UsernamePasswordAuthenticationToken)` by `username` and `password`. 
+
+       <img src="img/security_usernamePasswordAuthenticationToken.png" style="zoom:67%;" />
+
+    3. authenticate `UsernamePasswordAuthenticationToken` and return `authentication (class: Authentication)` if match, or throw `Exception`.
+
+       <img src="E:img/security_authentication.png" alt="j" style="zoom:50%;" />
+
+  - `successfulAuthentication` :
+
+    1. generate `jwt` via `JwtUtils`, which is a `class` create by yourself.
+
+  - 
+
+#### Filter Ordering
+
+[reference](https://docs.spring.io/spring-security/site/docs/3.0.x/reference/security-filter-chain.html)
+
+
 
 ## Question need to be finished
 
