@@ -1,4 +1,4 @@
-# Network Basic
+# Network Basic Theory
 
 [TOC]
 
@@ -17,15 +17,15 @@
 
 ### start
 
-Open System Interconnection Reference Model is a reference model mean it is not an actual model, it is the base of other actual models.
+Open System Interconnection Reference Model is a reference model (conceptual model) meaning it is not an actual model, it is the base of other actual models.
 
 ### layers
 
 There are seven layers:
 
-- Application: not the user interface itself.
+- Application: not the user interface itself. It involves user applications and end devices which allow users to access the network service.
 - Presentation: converts or encodes data into standard format so that receiving computer could understand. For example, text can be encoded as <u>ASCII</u> or <u>HTML</u>, and graphics can be encoded as <u>JPEG</u> or <u>TIFF</u>. 
-- Session: manage sessions. For example, a web conferencing application has to maintain separate sessions for each user participating in the conference.
+- Session: The Session layer protocols handle the initiation of a session between processes running on two different hosts. For example, if a host wants to access a web application, a session needs to be established between the host and the workstation hosting the web application, so that the series of related requests are distinguished and separated from others by offering a session id to maintain connections between applications.
 - Transport: converts data to a format that can be transmitted over the network.
 - Network: takes the segment from Layer 4 and adds a header to it to create a **package**, and then delivering the package to the destination computer. If there are more than one route to the destination computer. the Network Layer chooses the best path for the packet to take. Since the Network Layer treats each packet independently, so it is possible that two packets from the same transmission might take different paths to arrive at the destination computer.
 - Data Link: take package from the upper layer and adds another header to form a **frame**.
@@ -86,6 +86,8 @@ The final data should looks like this:
 
 #### Transport Layer
 
+- **Three-way handshake** is needed between the hosts before data transmission begins.
+- Receives data from the upper layer and divides it into the segments.
 - (upper layer protocol) Add **destination soft port number**: specifies the **soft port**, which indicates the **Application Layer protocol** should be used to process the data on the receiving computer.
   - **soft port number** is a unique number assigned to each **Application layer protocol**. So, from this number(port) we can know which **Application Layer protocol** the **Application Layer** use.
   - for example. HTTP is for port 80 and DNS for port 53 SMTP for port 25. So if the soft port number is specified as 25, that means the SMTP protocol will be used in the Application Layer.
@@ -156,11 +158,26 @@ The final data should looks like this:
 
 Name of data unit at each level
 
-- Transport Layer: Segment
+- Application, Presentation, Session: Data
+- Transport Layer: Segment (TPC), Datagram (UDP)
 - Network Layer: Packet
 - Data Link Layer: Frame
+- Physical: Bits
 
+### Ethernet frame
 
+<img src="img/ethernet_frame.png" style="zoom:50%;" />
+
+- **Preamble:** The preamble is a series of alternating 1's and 0's. It is used for time synchronization between hosts. The preamble along with the delimiter locates the beginning of a frame.
+- **FCS**: Frame check sequence is a 4-bytes field attached to the end of a frame.
+  FCS uses a cyclic redundancy check (CRC) algorithm to check for errors in the frame. CRC operates in a way similar to hashing to confirm that the data and the header have not changed during transit.
+- **Data Packet:** Contains the data along with the destination and source IP addresses.
+
+### Mac address
+
+<img src="img/mac_address.png" style="zoom:80%;" />
+
+- **OUI**: The first three bytes of a MAC address are called organizationally unique identifier (OUI) and represent the manufacturer ID. For example ACA016 is an OUI for Cisco. Of course, each manufacturer will have a set of OUIs designated to them.
 
 ## Routing Model (Layer 3 across the network)
 
@@ -172,7 +189,8 @@ Name of data unit at each level
 - In address resolution protocol (ARP), source device use target's IP address to get MAC address. Although IP address is prerequisite for the source device, it still need target's MAC address. This is because in the encapsulation and decapsulation, the layer can't be jump over.
 - IP comprises network number and host number, in the same network, the network number should be the same but host number should be unique. While across network the network number is unique but host number could be the same.
 - router is a Layer 3 device indicates that it can modify Layer 2 address of the received message
-- boarding table is maintained by the **switch**, if it can't find the MAC address, it will use ARP to populate it.
+- **boarding table** is maintained by the **switch**, if it can't find the MAC address, it will use ARP to populate it. **route table** is maintained by the **router**.
+- **route summarization/ route aggregation** will combine a group of network number into a single route.
 
 ### data flow in different cases
 
@@ -189,9 +207,19 @@ Use broadcast address `ffff.ffff.ffff`.
 
 #### address resolution protocol (ARP)
 
+<img src="img/network.png" style="zoom:150%;" />
+
+Device A and device B are in the same broadcast domain, A knows B's IP address but MAC address.
+
 In this scenario, computer A wants to send message to computer B within the same network.
 
-1. check the IP address to see if in the same broadcast domain. A is 1.1 and B is 1.2, the same prefix indicates that they are in the same domain or network.
+1. check the IP address to see if in the same broadcast domain. A is 1.1 and B is 1.2, the same network prefix indicates that they are in the same domain or network. 
+
+   To be more specific, with CIDR Notation, if computer A (192.168.1.8/24) wants to send message to computer B (192.168.1.3/24).
+
+   - computer A put source IP address and destination IP address in to the package but **without net mask**.
+   - use mask to check if they are in the same network.
+
 2. computer A need to know the MAC address of computer B, so it send a Layer 2 broadcast frame request, asking the MAC address of the device whose IP address is 1.2. Everyone in the network could hear.
    - this Layer 2 broadcast frame request contains:
      - destination Layer 2 address: `ffff.ffff.ffff`. This is a Layer 2 protocol.
@@ -200,6 +228,7 @@ In this scenario, computer A wants to send message to computer B within the same
      - sender's Layer 3 address: `1.1`
      - target Layer 2 address: `0000.0000.0000` indicating it is unknow.
      - target Layer 3 address: `1.2`
+
 3. only computer B will response after checking the target Layer 3 address.
    - this response contains:
      - destination Layer 2 address: `4a` This is a Layer 2 protocol.
@@ -208,18 +237,32 @@ In this scenario, computer A wants to send message to computer B within the same
      - sender's Layer 3 address: `1.2`
      - target Layer 2 address: `4a`
      - target Layer 3 address: `1.1`
+
 4. Then A and B can communicate through MAC address without disturbing others.
 
 #### when router get a package
 
 In this scenario, router E receive a package from port 1.
 
+<img src="img/network.png" style="zoom:150%;" />
+
 1. check the MAC address to see if router E is the right recipient. if the destination Layer 2 address in the package is `ac` that means it is right.
+
 2. remove Layer 2 frame such as destination Layer 2 address and source Layer 2 address.
+
 3. inspect Layer 3 information, if the destination IP address is `3.2`, the router E will check the router table and know it needs to be forwarded to next router whose IP address is `2.10` from port 2.
+
+   - A destination IP address might match multiple entries in the routing table since the destination IP address has no mask but in the routing table each entry has a mask. In that way the router will select the match with the longest prefix length.
+
+     <img src="img/longest_prefix.png" style="zoom:80%;" />
+
+     For example, if the Route get IP address 192.168.3.36 (**pay attention, IP address in the travelling package has no mask**), both Entry 1 and Entry 4 match the prefix but the Entry 4 is the longest, so the Entry 4 will be chosen.
+
 4. add new Layer 2 frame, including destination Layer 2 address (`34`) and source Layer 2 address (`b8`).
 
 #### send data across the network
+
+<img src="img/network.png" style="zoom:150%;" />
 
 In this scenario, Computer A send data to Computer C across network.
 
@@ -227,7 +270,11 @@ In this scenario, Computer A send data to Computer C across network.
 
    - At the Layer 3, source Layer 3 address will be `1.1` and destination will be `3.2`.
 
-   - At the Layer 2, Computer A need to clarify if Computer C is in the same network by check the destination IP address. Obviously they are not in the same network. So it will send the data to its configured default gateway / router. In this case, the destination Layer 2 address is `ac` and the source is `4a`.
+   - At the Layer 2, Computer A need to clarify if Computer C is in the same network by check the destination IP address. 
+
+     - computer A put source IP address and destination IP address in to the package but **without net mask**, and then use mask to compare two IP address.
+
+     Obviously they are not in the same network. So it will send the data to its **configured default gateway** / **router**. In this case, the destination Layer 2 address is `ac` and the source is `4a`.
 
      - if Computer A didn't know the configured default gateway's MAC address yet (already known the IP address of its default gateway because it is configured), it will use ARP to get the MAC address.
      - The default gateway of a PC is either configured by the network administrator or learned dynamically.
@@ -284,7 +331,220 @@ In this scenario, Computer A send data to Computer C across network.
 
 #### summary
 
-- if a PC find the destination IP address doesn't reside in its network, it will send the package to its default configured gateway.
+- IP address instructs the update of MAC address.
+- While sending a package across the network, IP address always records the ultimate destination but the MAC address only points to the next stop and will be updated by Layer 3 devices such like router.
+- If a PC find the destination IP address resides in the same network, it will use ARP to get the MAC address and send the package directly. If doesn't reside in its network, it will send the package to its default configured gateway.
 - if a router doesn't know the IP address, it will send the package to the default path of the router table.
-- while sending a package across the network, IP address always records the ultimate destination but the MAC address only points to the next stop and will be updated by Layer 3 devices such like router.
 - **router** is a Layer 3 device and **switch** is a Layer 2 device. The former could update the MAC address and inspect IP address, the latter could only inspect the MAC address.
+
+
+
+
+
+## IP Addressing
+
+### IPv4 
+
+#### IPv4 header format
+
+[click here](https://en.wikipedia.org/wiki/IPv4#Header)
+
+#### Subnetting
+
+- IP address comprises **network prefix** and **host address**
+- **net mask** will separate the **IP address** into two parts - network prefix and host address.
+- For assigned address range: 192.168.3.0/24. It could be broken down into multiple sub-networks. For example if we subnet it as 192.168.3.0/27, there will be 8 sub-networks and for each of which contains 30 valid host.
+
+#### network number and broadcast address
+
+The first network number should be the network number and the last network number should be the broadcast address.
+
+For example, 192.168.1.0/24, the network number: 192.168.1.0 and the broadcast address: 192.168.1.255. Valid host number: 192.168.1.1 through 192.168.1.254.
+
+To calculate the number of valid hosts:
+$$
+2^n - 2
+$$
+where n represents the host bits. In a /24 network, there are 8 host bits.
+
+#### classful routing
+
+- Class A: natural mask: `255.0.0.0`, begin with 0. range: 0-127.
+- Class B: natural mask: `255.255.0.0`, begin with 10. range: 128-191
+- Class C: natural mask: `255.255.255.0`, begin with 110. range: 192-223
+
+#### loopback interfaces
+
+A device uses the loopback interface to send a message back to itself.
+
+#### MTU and IP Fragmentation
+
+Maximum Transmission Unit (MTU) indicates the longest size of a package that can be sent in a single frame.
+
+If the package is beyond the MTU, the package will be fragmented by the Router. All fragments will be reassembled by Host B.
+
+<img src="img/ip_fragmentation.png" style="zoom:50%;" />
+
+# Network basic Lab
+
+## OSPF
+
+### Lab
+
+#### intuition
+
+tell each router which network you are residing, and it will learn to get a global picture of the entire topology.
+
+#### topology
+
+Here is the Lab result and explanation from Cisco.
+
+The topology of our network
+
+<img src="img/topology.png" style="zoom:150%;" />
+
+#### step
+
+- In each router:
+
+  ```bash
+  configure # into configure mode
+  set protocols ospf parameters router-id 1.1.1.x # Set a "router-id" of 1.1.1.X, replacing X with the corresponding router number. For example, 1.1.1.3 would be the router-id of router-3.
+  set protocols ospf area 0 network <network>/<netmask> # pay attention, this is the network ip address, not the interface's ip address.
+  commit
+  save
+  exit
+  ```
+
+- After configuring
+
+  ```bash
+  show ip ospf neighbor # check the result below
+  show ip route ospf # check the result below
+  ```
+
+#### result and explanation
+
+From the topology, we can category the network into two groups:
+
+1. loopbacks:
+   - router-1: `172.16.10.30/32`
+   - router-2: `206.135.204.150/32`
+   - router-3: `172.16.20.30/32`
+   - router-4: `8.8.8.8/32`
+2. networks:
+   - `192.168.168.4/31`
+   - `192.168.168.132/31`
+   - `192.168.168.100/31`
+   - `192.168.168.68/31`
+   - `192.168.168.36/31`
+
+For router-1:
+
+- neighbor
+
+  <img src="img/router-1_ospf.png" style="zoom:50%;" />
+
+  - from the topology, router-1 connect to router-2 and router-4, so there are two entries.
+
+- IP route
+
+  <img src="img/router-1_ospf2.png" style="zoom:150%;" />
+
+  - router-1 connects to all loopbacks:
+    - router-1: `172.16.10.30/32` direct connect
+    - router-2: `206.135.204.150/32` redirect connect via router-2's `eth2` whose IP address is `192.168.168.132`
+    - router-3: `172.16.20.30/32` redirect connect via router-4's `eht1` or router-2's `eth2`
+    - router-4: `8.8.8.8/32` redirect connect via router-4's `eth1`.
+  - 5 networks:
+    - `192.168.168.4/31`: direct connect, its `eth1` resides in this network.
+    - `192.168.168.132/31`: direct connect, its `eth2` resides in this network.
+    - `192.168.168.100/31`: via router-4's `eth1`
+    - `192.168.168.68/31`: via router-2's `eth2`
+    - `192.168.168.36/31`: via router-4's `eht1` or router-2's `eth2`
+
+For router-2:
+
+- neighbor
+
+  <img src="img/router-2_ospf.png" style="zoom:80%;" />
+
+  - from the topology, router-2 connect to router-1, router-3 and router-4, so there are three entries.
+
+- IP route, is similar to router-1's, no more explanation.
+
+  <img src="img/router-2_ospf2.png" style="zoom:150%;" />
+
+
+
+## DNS
+
+### start
+
+Domain Name System (DNS) cover real IP address with name.
+
+Any system directly connected to the internet has an IP address that is globally unique. Imagine having to type 69.63.176.13 in your web browser instead of <u>www.facebook.com</u> to access your Facebook profile.
+
+### hierarchy
+
+<img src="img/hierarchy_of_DNS.png" style="zoom:80%;" />
+
+Each server remember the name more and more specific
+
+- Resolver: interact with the client end directly and performs successive queries to resolve the IP address with the help of other three servers
+- Root Server: give the IP address of the TLD server with the request domain name, such as `.ca` or `.cn`.
+- TLD Server: resolve `.com`, `.net` or `.org`
+- Authoritative Nameserver: resolve subdomain, such as `maps.google.com`
+
+### standard operation
+
+Standard DNS resolution follows 10 steps. For this explanation, we will be imagining the client is attempting to navigate to cengn.ca:
+
+1. The client sends  request to the DNS resolver for the IP address of cengn.ca
+2. The DNS resolver contacts one of the root servers for the IP address of the TLD server with the requested domain name (that is, the .ca domain)
+3. The root server responds with the IP address of the .ca TLD nameserver
+4. The DNS resolver contacts the .ca TLD nameserver for the IP address of the server hosting cengn.ca
+5. The TLD nameserver responds with the IP address of the hostname’s authoritative nameserver (domain nameserver)
+6. The DNS resolver contacts the authoritative nameserver for the IP address of cengn.ca
+7. The authoritative nameserver returns the IP address of cengn.ca. If we were looking for a subdomain of cengn.ca (for example, help.cengn.ca), the authoritative nameserver would query the appropriate subdomain for the IP address and return it to the DNS resolver.
+8. The DNS resolver responds to the DNS client with the IP address of the requested hostname
+9. The client makes an HTTPS request to the returned IP address
+10. The server responds with the webpage
+
+### DNS: Caching
+
+DNS will save past DNS request in the cache so that next time with the same domain, it needn't to check it again.
+
+But there is a time to live period (TTL), if the require duration goes beyond this period, that mean this mapping is expired, DNS client need to re-query the hostname through standard DNS methods.
+
+There are several types of DNS caching at different steps of the DNS lookup process:
+
+- Browser DNS caching: Many modern web browsers will cache the IP addresses of past hostnames, meaning the client does not have to query the DNS resolver at all
+- Operation system DNS caching: All OSs have DNS resolvers known as “stub resolvers” which act in the same way as Browser DNS caching
+- Recursive Resolver DNS caching: DNS resolvers also cache IP addresses and will return cached information to bypass communication with the rest of the DNS nameservers
+
+### Lab
+
+- We need to set a DNS router (Router-4) first.
+
+  - map r2loop with Router-2 loopback interface, in Router-2 `set system static-host-mapping host-name r2loop inet 206.135.204.150`.
+
+  - configure Router-4 as a DNS server.
+
+    ```bash
+    # Define which hosts are allowed to connect to the DNS server
+    set service dns forwarding allow-from 192.168.168.0/24
+    
+    # Define which address router-4 will listen on
+    set service dns forwarding listen-address 8.8.8.8
+    ```
+
+- In Router-1, set Router-2 as the DNS server
+
+  - ```bash
+    # Enter configuration mode
+    configure
+    
+    # Set DNS (name) Server
+    set system name-server 8.8.8.8 # router-2's loopback
+    ```
