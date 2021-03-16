@@ -41,8 +41,8 @@ const promise = new Promise((resolve, reject) => {
 ```
 
 - `resolve` and `reject` are two function handles. 
-- `resolve` set `PromiseStatus` into `fulfilled` and load "resolved" into `PromiseResult`
-- `reject` set `PromiseStatus` into `rejected` and load "rejected" into `PromiseResult`
+- `resolve` set `PromiseStatus` into `fulfilled` and load "resolved" (or other object) into `PromiseResult`
+- `reject` set `PromiseStatus` into `rejected` and load "rejected" (or other object) into `PromiseResult`
 
 check this image:
 
@@ -113,19 +113,32 @@ Just like one argument `then()` who just focus on `resolved Promise`, the `catch
 
 By use one argument `then()` and `catch()` , we can form a `Promise` chain, code like this:
 
-```javascript
-promise.then(res => ...).then(res => ...).then(res => ...).catch(error => ...)
-```
+- ```javascript
+  promise.then(res => ...).then(res => ...).then(res => ...).catch(error => ...)
+  ```
+  - the `rejected Promise` will be omitted by the next `then()` until received by the `catch()`
 
-- the `rejected Promise` will be omitted by the next `then()` until received by the `catch()`
+- For a `rejected Promise`: `yourPromise` is a `rejected Promise`, only the last `catch()` is trigged.
 
-<img src="img/promise_chain_1.png" style="zoom:50%;" />
+  <img src="img/promise_chain_1.png" style="zoom:50%;" />
 
-- `yourPromise` is a `rejected Promise`, only the last `catch()` is trigged.
+- For a `fullfilled Promise`:  `myPromise` is a `fulfilled Promise` all but the `catch()` will be executed.
 
-<img src="img/promise_chain_2.png" style="zoom:50%;" />
+  <img src="img/promise_chain_2.png" style="zoom:50%;" />
 
-- `myPromise` is a `fulfilled Promise` all but the `catch()` will be executed
+- If a `then()` return a `rejected Promise`, all other `then()` behind it will be ignored.
+
+  <img src="img/reject_in_then.png" style="zoom:67%;" />
+
+  - Here the second `then()` return a `rejected Promise`, the third one is ignored.
+
+
+
+#### `throw`
+
+When throw the exception, it is almost the same as a `rejected Promise`.
+
+<img src="img/throw_1.png" style="zoom:67%;" />
 
 #### asynchronous
 

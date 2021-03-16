@@ -1,21 +1,48 @@
 # ReactJS
 
-## catalog
+## Class Component
 
-- [ReactJS](#reactjs)
-  * [redux](#redux)
-    + [intuition](#intuition)
-    + [start and run](#start-and-run)
-    + [terminologies](#terminologies)
-      - [action](#action)
-      - [reducer](#reducer)
-        * [functions:](#functions-)
-      - [store](#store)
-        * [functions:](#functions--1)
-      - [enhancer](#enhancer)
-      - [middleware](#middleware)
-        * [functions:](#functions--2)
-    + [hierarchy of the project](#hierarchy-of-the-project)
+### Library
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+#### router
+
+- App.js
+
+  ```javascript
+  <Router>
+      <Switch>
+      	<Route path="/shops/:shopId/dishes">
+          	<DishesInShop />
+          </Route>
+  	</Switch>
+  </Router>
+  ```
+
+##### use parameter in link
+
+- refers `shopId` in DishesInShop.js
+
+  ```javascript
+  this.props.match.params.shopId
+  ```
+
+##### use `history.push()`
+
+- refers another link in DishesInShop.js
+
+  ```javascript
+  this.props.history.push(`../${dishId}/...`);
+  ```
+
+
+
+## Functional Component
+
+### Library
+
+#### router
+
+##### use `history.push()`
+
+- refers 
 

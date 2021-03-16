@@ -87,7 +87,7 @@ The final data should looks like this:
 #### Transport Layer
 
 - **Three-way handshake** is needed between the hosts before data transmission begins.
-- Receives data from the upper layer and divides it into the segments.
+- Receives data from the upper layer and **divides** it into the segments.
 - (upper layer protocol) Add **destination soft port number**: specifies the **soft port**, which indicates the **Application Layer protocol** should be used to process the data on the receiving computer.
   - **soft port number** is a unique number assigned to each **Application layer protocol**. So, from this number(port) we can know which **Application Layer protocol** the **Application Layer** use.
   - for example. HTTP is for port 80 and DNS for port 53 SMTP for port 25. So if the soft port number is specified as 25, that means the SMTP protocol will be used in the Application Layer.
@@ -337,6 +337,29 @@ In this scenario, Computer A send data to Computer C across network.
 - if a router doesn't know the IP address, it will send the package to the default path of the router table.
 - **router** is a Layer 3 device and **switch** is a Layer 2 device. The former could update the MAC address and inspect IP address, the latter could only inspect the MAC address.
 
+### routing protocols
+
+#### OSPF (Open Shortest Path First)
+
+- **Configure**: Each **OSPF-enabled** router sends “Hello” packets out all of its **OSPF-enabled** interfaces to determine if any neighbors exist on those links. If a neighbor is present, then it will try to form an adjacency with it. This way, all the routers in the network form adjacencies with their neighbors.
+
+  - that means you need to configure the interfaces of the router to enable the OSPF protocols.
+
+- **Link-State Database**: link is considered as the interface of a router. Each link has information such as IP address, subnet mask, type of network it is connected to, routers connected to the network. All this information from different links attached to a router form a "Link-State Database."
+
+- **Know the entire topology**: routers will exchange Link-State Advertisements (LSAs) with their neighbor routers. LSAs contain the state and cost of each directly connected link. When all routers in the autonomous system receive all possible LSAs they could understand the entire topology of the network. If there are too many routers or links in a network, routers need more time to learn  the topology, to avoid that, we need to divide an OSPF network domain into smaller sub-domains called areas. 
+
+  All the routers within an area must know the topology of the area to which it belongs, but they do not know about routers in the other areas. Area 0 (also called the **Backbone Area**) has a connection to all the other areas in an autonomous system. All the routing across the areas is managed through the backbone area. Four types of router:
+
+  - **Backbone Router:** Routers in area zero, connects to all other areas.
+  - **Internal Routers:** Routers inside an area.
+  - **ABR:** Area Border Router is a router located near the border between two different OSPF areas. It connects the backbone network to an OSPF area.
+  - **ASBR:** Autonomous System Border Router connects an OSPF area to a network running a different routing protocol.
+
+- **Build Routing Table**: Dijkstra's Shortest Path First algorithm (SPF algorithm) convert the LSDB to SPF tree and then the routing table.
+
+
+
 
 
 
@@ -385,7 +408,33 @@ If the package is beyond the MTU, the package will be fragmented by the Router. 
 
 <img src="img/ip_fragmentation.png" style="zoom:50%;" />
 
-# Network basic Lab
+## Traffic Filtering
+
+### Access Control Lists (ACL)
+
+- ACL is a set of rules that controls incoming and outgoing traffic.
+- stateless, They look at each packet discretely and do not consider its relationship with the previous packet or compare the two.
+- It operates on Layer 3 and Layer 4 of the OSI model.
+
+### Stateful Firewalls
+
+- Stateful firewalls perform stateful inspection, meaning, they compare the incoming traffic with the previous packets and can make decisions based on the sequence of the traffic.
+- in a TCP handshake process, if a stateful firewall finds a packet with the ACK bit set to 1, it can recognize that the incoming traffic is part of the TCP handshake process by looking at any of the packets with the ACK bit set to 1.
+- Stateful firewalls can operate from Layer 3 up to Layer 7 of the OSI model.
+
+## three-way handshake
+
+<img src="img/3way-handshake.png" style="zoom:67%;" />
+
+[comes here](https://www.guru99.com/tcp-3-way-handshake.html)
+
+
+
+# Learn from Cisco Lab
+
+## topology
+
+<img src="img/topology.png" style="zoom:150%;" />
 
 ## OSPF
 
@@ -491,45 +540,40 @@ Any system directly connected to the internet has an IP address that is globally
 
 Each server remember the name more and more specific
 
-- Resolver: interact with the client end directly and performs successive queries to resolve the IP address with the help of other three servers
-- Root Server: give the IP address of the TLD server with the request domain name, such as `.ca` or `.cn`.
-- TLD Server: resolve `.com`, `.net` or `.org`
-- Authoritative Nameserver: resolve subdomain, such as `maps.google.com`
-
-### standard operation
-
-Standard DNS resolution follows 10 steps. For this explanation, we will be imagining the client is attempting to navigate to cengn.ca:
-
-1. The client sends  request to the DNS resolver for the IP address of cengn.ca
-2. The DNS resolver contacts one of the root servers for the IP address of the TLD server with the requested domain name (that is, the .ca domain)
-3. The root server responds with the IP address of the .ca TLD nameserver
-4. The DNS resolver contacts the .ca TLD nameserver for the IP address of the server hosting cengn.ca
-5. The TLD nameserver responds with the IP address of the hostname’s authoritative nameserver (domain nameserver)
-6. The DNS resolver contacts the authoritative nameserver for the IP address of cengn.ca
-7. The authoritative nameserver returns the IP address of cengn.ca. If we were looking for a subdomain of cengn.ca (for example, help.cengn.ca), the authoritative nameserver would query the appropriate subdomain for the IP address and return it to the DNS resolver.
-8. The DNS resolver responds to the DNS client with the IP address of the requested hostname
-9. The client makes an HTTPS request to the returned IP address
-10. The server responds with the webpage
+- for the address `www.example.ca`
+- client send the request to the DNS Resolver
+- The DNS Resolver asks the Root Server to resolve `.ca` and find the IP address of the TLD Server who stores the `.ca` domain.
+- The DNS Resolver asks this TLD Server to get the IP address of Authoritative Server (domain nameserver) who owns the `example` host name.
+- The DNS Resolver asks this Authoritative Server to get the IP address of `www.example.ca`. But if the address is `www.help.example.ca`, the Authoritative Server will give the IP address of this subdomain as well.
 
 ### DNS: Caching
 
 DNS will save past DNS request in the cache so that next time with the same domain, it needn't to check it again.
 
-But there is a time to live period (TTL), if the require duration goes beyond this period, that mean this mapping is expired, DNS client need to re-query the hostname through standard DNS methods.
+TTL to determine the expiration time.
 
 There are several types of DNS caching at different steps of the DNS lookup process:
 
-- Browser DNS caching: Many modern web browsers will cache the IP addresses of past hostnames, meaning the client does not have to query the DNS resolver at all
-- Operation system DNS caching: All OSs have DNS resolvers known as “stub resolvers” which act in the same way as Browser DNS caching
-- Recursive Resolver DNS caching: DNS resolvers also cache IP addresses and will return cached information to bypass communication with the rest of the DNS nameservers
+- Browser DNS caching: Many modern web browsers will cache the IP addresses of past hostnames, meaning the client does not have to query the DNS resolver at all.
+- Operation system DNS caching: All OSs have DNS resolvers known as “stub resolvers” which act in the same way as Browser DNS caching.
+- Recursive Resolver DNS caching: DNS resolvers also cache IP addresses and will return cached information to bypass communication with the rest of the DNS nameservers.
+- Authoritative Server will also have cache: We don't want to bother Root Server and TLD Server as mush cause everybody calls them.
+
+Authoritative nameserver is the final source of truth for DNS records, but for very large domains, there can be additional nameservers responsible for storing subdomain's records. Queries don't always go to the root server or TLD server.
 
 ### Lab
 
+We want to configure Router-4 as a DNS server.
+
 - We need to set a DNS router (Router-4) first.
 
-  - map r2loop with Router-2 loopback interface, in Router-2 `set system static-host-mapping host-name r2loop inet 206.135.204.150`.
+  - In Router-4, map r2loop with Router-2 loopback interface.
 
-  - configure Router-4 as a DNS server.
+    ```bash
+    set system static-host-mapping host-name r2loop.local inet 206.135.204.150
+    ```
+
+  - configure Router-4 to be a DNS server. and allow all hosts within 192.168.168.0/24 could access to it.
 
     ```bash
     # Define which hosts are allowed to connect to the DNS server
@@ -537,9 +581,12 @@ There are several types of DNS caching at different steps of the DNS lookup proc
     
     # Define which address router-4 will listen on
     set service dns forwarding listen-address 8.8.8.8
+    
+    # On router-4, ping r2loop.local to confirm the hostname resolution works:
+    ping r2loop.local
     ```
 
-- In Router-1, set Router-2 as the DNS server
+- In Router-1, set Router-4's loopback (8.8.8.8) as the DNS server
 
   - ```bash
     # Enter configuration mode
@@ -547,4 +594,13 @@ There are several types of DNS caching at different steps of the DNS lookup proc
     
     # Set DNS (name) Server
     set system name-server 8.8.8.8 # router-2's loopback
+    
+    # ping r2loop.local from Router-1
+    ping r2loop.local
     ```
+
+## NTP
+
+- Use UDP 123
+- client and server must have NTPD daemon installed
+- Stratum 1 is not public. 2-15 could be used to synchronize.

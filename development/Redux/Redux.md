@@ -1,26 +1,12 @@
-# redux
+# Redux Theory
 
-## catalog
+[TOC]
 
-- [catalog](#catalog)
-- [intuition](#intuition)
-- [start and run](#start-and-run)
-- [terminologies](#terminologies)
-  * [action](#action)
-  * [reducer](#reducer)
-    + [functions:](#functions-)
-  * [store](#store)
-    + [functions:](#functions--1)
-  * [enhancer](#enhancer)
-  * [middleware](#middleware)
-    + [functions:](#functions--2)
-- [hierarchy of the project](#hierarchy-of-the-project)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## intuition
 
-
+<img src="img/redux_data_flow.png" style="zoom:67%;" />
 
 ## start and run
 
@@ -39,7 +25,7 @@ Then `npm start` , or `npm install react-scripts` if `react-scripts` package is 
 
 ### action
 
-An object containing a `type` field, describes what happened, looks like this `{type: 'todos/todoAdded', payload: todoText}`. 
+An object containing a `type` field, describes what happened, looks like this `{type: 'todos/todoAdded', payload: todoText}`. Even if we use sliced reducer (eg: `userReducer`, `shopReducer`), action will also go through all these reducer.
 
 ### reducer
 
@@ -63,7 +49,7 @@ The core of the `redux` , store decides how to handle with actions and update st
 
 - `store.dispatch` trigger the reducer to update the state
 
-- `store.subscribe` a callback function returning a function to cancel itself. When `state` update, the `store.subscribe` will be triggered to execute. [check the usage here](https://redux.js.org/tutorials/fundamentals/part-4-store#dispatching-actions), also see the code snippet: ```
+- `store.subscribe` a callback function returning a function to cancel itself. When `state` update, the `store.subscribe` will be triggered to execute. [check the usage here](https://redux.js.org/tutorials/fundamentals/part-4-store#dispatching-actions), also see the code snippet: 
 
   ```javascript
   // any time when the state update, print
@@ -178,61 +164,129 @@ dispatch({type: 'todos/todoAdded', payload: something})
 
 
 
-## embed `redux` in an existed `react`
+# Practice: `redux` in  ` component` 
 
-### install packages
+pay attention, `redux` and `react-redux` are two different packages, we need to use `react-redux` to bind `react` with `redux`.
 
-- `redux`
-- `react-redux`
-- `redux-devtools-extension` 
+![redux works in component](img/redux_component.png)
 
+## Intuition
 
+- We need to connect `redux` and `component` so that in the `component` , we can access to the `redux state` and `redux action`.
 
-### create store
+## Install dependencies
 
-In `src/store.js` file.
+- install packages
+  - `redux`
+  - `react-redux`
+  - `redux-devtools-extension`  if needed.
 
-### create root reducer
+## the hierarchy
 
-In `src/reducer.js` file.
+In `src/` folder:
 
-### create slice file
+- Component/
 
-In `src/Redux/your-name/slice.js` file.
+  - your class components
 
-We need `initialState`, `reducer` , `action` and `thunk`
+    - you need to bind `redux state` to `react component`
 
-### modify index.js
+    - ```javascript
+      class yourComponent extends Component {...}
+      
+      ...
+      
+      const mapStateToProps = (state, ownProps) => {
+          return{
+              currentUser: state.nameOfYourReduxStateInAnyReducer,
+          }
+      }
+      
+      const mapDispatchToProps = {
+          actionCreator
+      }
+      
+      export default connect(
+          mapStateToProps,
+          mapDispatchToProps
+      )(withRouter(yourComponent));
+      ```
+    
+  - your function components
 
-### `store` and `component`
+    - use hook directly without binding `component` with `redux`
 
-#### access to `redux state` from `react component`
+    - ```javascript
+      const cart = useSelector(state => state.cart); // access to the redux state
+      const dispatch = useDispatch(); // to access to the redux action
+      ```
 
-```javascript
-class yourComponent extends Component {...}
-function mapStateToProps(state){
-    return{
-        yourEntity: state.yourEntityName
-    }
-}
-export default connect(mapStateToProps)(yourComponent);
-```
+    - ```javascript
+      dispatch(action()) // patch actions
+      ```
 
+  - outside of your components
 
+    - import the `store`
 
+    - ```javascript
+      const state = store.getState(); // state
+      const dispatch = store.dispatch;
+      ```
 
+    - ```javascript
+      dispatch(action())
+      ```
 
-## hierarchy of the `react-redux` project
+- Redux/
 
-- src
-  - features
-    - token
-      - tokenSlice.js: define `initialState`, `tokenReducer`, define `action` and some support functions that will dispatch `action`, such as `thunk function`, and `createSelector`. Here you can access to `redux state` directly. Don't import `store` here so don't use `store.useSelector`.
-      - profileTable.jsx: a UI file to render the snippet UI by using `redux state`, here we use `useSelector` to extract data out and use in `render`.
+  - `yourEntityFoler`/
 
-## PROBLEM
+    - `actionCreator`: define actions here
+    - `actionTypes`: define action types
+    - `reducer`: `initStates` and `reducer` function. Actions will go through all sliced reducers.
 
-### cannot access 'initialState' before initialization
+  - index.js
 
-- I import `store` in the `tokenReducer.js`, so there will be a cycle.
+    - `combineReducers`
 
+    - `createStore` in this way if you want to check `redux` in browser.
+
+      ```javascript
+      const store = createStore(rootReducer,
+          window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+      ```
+
+      <img src="img/redux_devtools.png" style="zoom:50%;" />
+
+- Services/
+
+  - `restClient.js`: define `post` and `get` function
+  - `otherEntityServices`: such as `user.js` to CRUD user information, `dish.js` to CRUD dish information and `auth.js` to login and register.
+
+- `index.js`
+
+  - ```javascript
+    <Provider store={store}>
+        <App />
+    </Provider>
+    ```
+
+## functions
+
+- `mapStateToProps` : [reference](https://react-redux.js.org/using-react-redux/connect-mapstate#defining-mapstatetoprops)
+  - `mapStateToProps` is a function that you would use to provide the store data to your component, whereas 
+  - If **`mapStateToProps`** argument is specified, the new component will subscribe to Redux store updates. This means that any time the store is updated, `mapStateToProps` will be called. The results of `mapStateToProps` must be a plain object, which will be merged into the component’s props.
+- `mapDispatchToProps`:
+  - `mapDispatchToProps` is something that you will use to provide the action creators as props to your component.
+  - With **`mapDispatchToProps`** every action creator wrapped into a dispatch call so they may be invoked directly, will be merged into the component’s props.
+
+# PROBLEM
+
+## cannot access 'initialState' before initialization
+
+- I import `store` in the `tokenReducer.js`, so there will be an infinite cycle.
+
+## Error: ENOENT: no such file or directory, open ...
+
+- restart by using `npm start`.

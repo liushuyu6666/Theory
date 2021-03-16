@@ -22,4 +22,9 @@ Like .h in C
 
 ![modifier](img\java_modifier.png)
 
-[detail](
+
+
+### method
+
+- type
+  - `static`:  it can be accessed without creating an object of the class, unlike `public`, which can only be accessed by objects:
