@@ -1,4 +1,23 @@
-# ReactJS
+# Implementation
+
+## Start
+
+- enter an empty folder
+- in `cmd` type `npx create-react-app my-app`
+- `cd my-app`
+- `npm start`
+
+## Install dependencies
+
+- `npm install react-router-dom`
+- redux
+- bootstrap
+
+## proxy
+
+configure the proxy in `package.json`.
+
+# Theoretical Knowledge
 
 ## Class Component
 

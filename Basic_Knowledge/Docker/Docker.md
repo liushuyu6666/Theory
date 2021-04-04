@@ -1,27 +1,49 @@
-# `container` and `Docker`  basics
+# Theoretical Knowledge
 
 [TOC]
 
 
-## Intuition
+## concepts
 
-### `container`
+### virtual machine
 
-what is container? check this diagram.
+In a nutshell, a virtual machine is a virtual application of computer system, which means it provides functionality that is needed to execute the operating system.
 
+<img src="img/the_progress_of_virtual_machine.png" style="zoom:50%;" />
 
+- traditionally, OS deployed on Hardware directly
+- **Hypervisor**: In virtual machine, here is a hypervisor, which create and run virtual machine. VMware, Virtual Box are hypervisors. 
+  - Hypervisor provides each VM a Guest OS and transform resource and request from VM to the hardware and back. 
+  - Hypervisor optimize the usage of resources such as CPU cycles, or memory.
+- Each VM is a atomic entity, with all the binaries and libraries required to run multiple applications.
+- **Disadvantage**:
+  - Hypervisor need to collect all requests and instructions from guests and translates them for the host OS, which costs additional time.
+  - need more time to spin up and pull down.
+- **Types** of Hypervisor:
+  - Type 1: run directly on the system hardware. so it is completely independent of the host operating system.
+  - Type 2: run on the host system, problem in the host system will affect any guest OS. VMware workstation and Virtual Box are Type 2 hyper.
+
+### Container
+
+container could be treated as a software that packaged up executable code and its dependencies or necessary libraries so that application can be ran on multiple different computing environment.
+
+- **Image**: all these necessary libraries, tools and settings can be packaged into a static container image, which can be an active container in the run time.
+- **name space**: container use name space to isolate resources between two containers. Name space enables **Linux processes** to be isolated in their own system environments without interfering with each other.
+- it provides an OS-level virtualization.
+
+### difference between VM and container
+
+check this diagram.
 
 <img src="img/VMs-and-Containers.jpg" alt="container architecture" style="zoom:50%;" />
 
-- `container` provides a environment as small as possible to run a software. `container` can be created by `Docker image`, then you can develop on it, after finishing developing, you can commit it back to a `image` and upload it to the [`docker hub`](https://hub.docker.com/). Briefly speaking, it is just a running instance of an `image`.
-- `container` filesystem is separated from the host's filesystem
-- `container` packages an application with all its dependencies, binaries and libraries allowing it to run independently.
+Here are some differences:
 
-### `Linux namespace`
-
-a `Linux feature` that `container` use to isolate different `container`. 
-
-`Namespace`  enables `Linux processes` to be isolated in their own system environments without interfering with each other.
+1. there is no need to use the **hypervisor** layer under the container. Container will virtualize the Host OS and build on it directly.
+2. there is no **guest OS** in container.
+3. container can run faster and more efficiently.
+4. they use **namespace** to isolate. namespace is a Linux kernel construct that can restrict where the application code can run on the system, it can include shared libraries which can be accessible by multiple containers.
+5. VM can contain multiple applications but container can just support one application.
 
 ### `Docker`
 
@@ -38,18 +60,6 @@ A **`Docker image`** is a read-only template that contains a set of instructions
 [reference here](https://jfrog.com/knowledge-base/a-beginners-guide-to-understanding-and-building-docker-images/#:~:text=A%20Docker%20image%20is%20a,publicly%20with%20other%20Docker%20users.)
 
 ## comparison
-
-### different between VM and container
-
-<img src="img/VMs-and-Containers.jpg" alt="container architecture" style="zoom:50%;" />
-
-|            | virtual machine                                              | container                                                    |
-| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| difference | 1.  guest `OS`<br />2.  full stack, run a full copy of `OS` but also a virtual copy of all the hardware, for example, if your VM runs out of the `RAM`, you need to shut it down and reconfigure. | 1. no guest `OS`<br />2.  more dependent on the host `OS`, just run the executive code and necessary `lib` |
-| common     | both have `image`                                            | both have `image`                                            |
-| benefits   | 1.  All `OS` **resources** available<br />2.  stronger **isolation**<br />3.  better know **security** controls and tools | 1.  reduced IT **management** resources<br />2.  **spin up** quickly<br />3.  less code to **migrate** and **transfer** |
-
-
 
 ### different between VM image and docker image
 
@@ -85,11 +95,11 @@ A **`Docker image`** is a read-only template that contains a set of instructions
 
 [reference here](https://stackoverflow.com/questions/29096967/what-are-the-differences-between-a-vm-image-and-a-docker-image)
 
-## operation and command
+# Lab
 
 We operate the `container`, which are created by `Docker image` 
 
-### start - build, pull and run
+## start - build, pull and run
 
 The diagram of `docker build`, `docker pull` and `docker run`
 
@@ -106,27 +116,56 @@ commands:
   ```
 
   - `-d`: Runs the `container` in detached mode leaving your current terminal free as well as allowing the `container` to run in the background.
-  - `-p`: Specifies the ports. The number on the left is the port on the host machine (running `Docker`) and the number on the right is the port that will receive the traffic within the `container`.
+  - `-p`: Specifies the ports. The number on the **left** is the port on the host machine (running `Docker`) and the number on the **right** is the port that will receive the traffic within the `container`.
+  - step taken by docker
+    1. Searched for the Nginx image locally and couldn't find it.
+    2. Pulled the Nginx image from Docker Hub.
+    3. Docker daemon created a container from that image.
 
-- to view all of the `images` stored on teh local system: `docker images`
+- to pull a certain image to create the container. `docker pull nginx`.
 
-### check the containers
+- to view all of the `images` stored on the local system: `docker images`
+
+- use [docker hub](https://hub.docker.com) where Docker users and partners create, test, store, and distribute container images.
+
+- check the connect: `curl <ipOfYourHost>:<port>`
+
+## stop and start
+
+```shell
+docker stop [container name or ID] # stops a running container
+docker start [container name or ID] # restarts a container
+docker ps
+docker ps -a
+docker start [container name or ID]
+```
+
+
+
+## check the containers
 
 - `docker ps --format "table {{.Names}}\t{{Image}}"`
 
-### go into `container`
+## go into `container`
 
-- create a interactive seesion with the container `docker exec -it [name of container] /bin/bash`
+Normally with a virtual machine you would use a GUI or SSH to access and control it. With containers, things are a little bit different. Docker allows you to trigger an interactive shell into the environment within a container and manipulate it through that.
 
-### file system
+- create a interactive session with the container `docker exec -it [name of container] /bin/bash`
 
-- ```bash
-  docker cp train/. [Name_of_your_containter]:/usr/share/nginx/html
+  - **-it**: Launches interactive shell.
+  - **name**: The container you would like to enter, you can also put the container ID here.
+  - **/bin/bash**: The shell interpreter to be used.
+
+- copy file into the container
+
+  ```shell
+  # Format = docker cp <source> <destination>
+  docker cp training-html/. <containerName>:/usr/share/nginx/html
   ```
 
   - `.`: copy the contents of the directory and not the directory itself
 
-### network
+## network
 
 Since `container` works on the host, we need to map the `host port` to `container port`.  When we run 
 
@@ -134,21 +173,21 @@ Since `container` works on the host, we need to map the `host port` to `containe
   docker run --name [Name_of_your_container] -d -p 80:80 nginx
   ```
 
-actually we map the host's 80 port to our `container`'s 80 port, since the `nginx` listen to the 80 port (of our `container`), so it is unconvenient to change the `container`s port. We can change the host's port from 80 to 8080 by using the command below.
+actually we map the host's 80 port to our `container`'s 80 port, since the `nginx` listen to the 80 port (of our `container`), so it is inconvenient to change the `container`s port. We can change the host's port from 80 to 8080 by using the command below.
 
 - ```bash
   docker run --name [Name_of_your_container] -d -p 8080:80 nginx
   ```
 
-### commit and push
+## commit and push
 
 In this part we need to commit `container` to `image` to try to push `image` to the `Docker Hub`. don't confuse `container` and `image` here.
 
-####  create account
+###  create account
 
  [`Docker Hub`](https://hub.docker.com/)
 
-#### commit
+### commit
 
 After developing the software in the `container` you can package it up back to `Docker image` (commit) by the code below.
 
@@ -158,11 +197,11 @@ docker commit -m="any message you want" [container_name] [image_name]
 
 view the `images` to check the new `image` has been generated: `docker images`
 
-#### login
+### login
 
 `docker login`
 
-#### tag
+### tag
 
 When developing with `containers` it is important to tag your `images`. The convention you use to assign a tag is up to you; however if no tag is specified, the "latest" tag will be assigned by default. The same applies when requesting `images` - if no tag is specified, the latest tag will always be assumed. This means that if you create an `image` with the tag "blueVersion", you must specify that tag when you try and retrieve it. Otherwise, `Docker` will look for the "latest" tag.
 
@@ -177,12 +216,12 @@ Then there are now two different "versions" (defined by tags) on your machine:
 - One with the "latest" tag that was used by default when you created the image.
 - One with the tag you just created.
 
-#### push
+### push
 
 ```bash
 docker push [DockerHubName]/[DockerHubRepo]:[tag]
 ```
 
-### docker remove
+## remove the container
 
 `docker stop [container_name]` first and then `docker rm [container_name]`.

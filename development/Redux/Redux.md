@@ -177,8 +177,8 @@ pay attention, `redux` and `react-redux` are two different packages, we need to 
 ## Install dependencies
 
 - install packages
-  - `redux`
-  - `react-redux`
+  - `redux` `npm install redux`;
+  - `react-redux` `npm install react-redux`
   - `redux-devtools-extension`  if needed.
 
 ## the hierarchy

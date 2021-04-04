@@ -6,15 +6,17 @@ Two main components of `git` are branch and state.
 
 You can change state on different branch.
 
-## git state
+## state
 
 <img src="img/git_state.png" alt="img" style="zoom:150%;" />
 
 
 
-## git branch
+## branch
 
 <img src="img/GIT_Branchand.png" style="zoom:150%;" />
+
+- create a new branch and switch to that: `git checkout -b [name_of_your_new_branch]`
 
 ## scenario
 
@@ -36,9 +38,27 @@ You can change state on different branch.
   3. `git push -u origin`
   4. after that, if you use `git status`, this file will be shown as `untracked files`.
 
-### update branch with master
+### update other branches based after changing something in the master branch
 
-[click here](https://stackoverflow.com/questions/3876977/update-git-branches-from-master)
+if you have two branches (master and b1), you realized you have something to change on branch master that should be in all other branches....
+
+[rebase or merge](https://stackoverflow.com/questions/3876977/update-git-branches-from-master)
+
+### update master branch after merge two branches in the remote.
+
+[git pull <remote>](https://www.atlassian.com/git/tutorials/syncing/git-pull)
+
+### How do I undo 'git add' before commit
+
+[git reset <file>](https://stackoverflow.com/questions/348170/how-do-i-undo-git-add-before-commit)
+
+### Check and update the remote URL
+
+`git config --get remote.origin.url` 
+
+`git remote -v`
+
+`git remote set-url origin git@gitserver.com:user/repo_name.git`
 
 ## reference
 

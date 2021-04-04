@@ -93,7 +93,7 @@ If there is something run on the 8080 port:
 
 your need to configure the `[yourProjectName].service`, use `sudo vim /etc/systemd/system/jupiter.service` since my project's name is `jupiter`.
 
-![](img/daemon.png)
+:![](img/daemon.png)
 
 - `WorkingDirectory`: is the place where your `.jar` file locates.
 - `ExecStart`: the execute command that you use to run the `.jar` file. But the java path should be full path, get your java path through `which java`.

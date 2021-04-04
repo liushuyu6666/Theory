@@ -428,9 +428,25 @@ If the package is beyond the MTU, the package will be fragmented by the Router. 
 
 [comes here](https://www.guru99.com/tcp-3-way-handshake.html)
 
+## NF, NFV, NFVI
 
+### start
+
+<img src="E:img/NFVI.jpg" style="zoom:67%;" />
+
+- NF: Network Function: load balancer, router, firewall, gateway...
+- NFV: Network Function Virtualization. How do we virtualize the original network function. It is a process.
+- NFVI: Network Function Virtualization Infrastructure.
+- VNF: software implementation of a network function: different vendor or different company will have different way to implementing it. There are tangible software asset.
+- MANO: Management and Orchestration: Manages the NFVI and VNFs.
+- At first we have NF, then we virtualize them (NFV) to get virtualized network functions (VNF) 
+- Virtualization Layer just like Virtual Box, Open Stack.
 
 # Learn from Cisco Lab
+
+## start
+
+- Router Interface: you can assume they are the ports of the switch, such as eth1 or eth2 in the topology.
 
 ## topology
 
@@ -532,7 +548,7 @@ For router-2:
 
 Domain Name System (DNS) cover real IP address with name.
 
-Any system directly connected to the internet has an IP address that is globally unique. Imagine having to type 69.63.176.13 in your web browser instead of <u>www.facebook.com</u> to access your Facebook profile.
+We need to connect to a DNS server to parse the DNS name, such as [8.8.8.8](https://www.whatsmydns.net/articles/8-8-8-8.html) as Google's DNS server.
 
 ### hierarchy
 

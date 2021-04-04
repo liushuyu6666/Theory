@@ -23,15 +23,13 @@ Add dependencies in build.gradle from [here](https://mvnrepository.com/artifact/
 - `spring-boot-web-starter`: develop base on RESTful services;
 - `spring-boot-starter-security`: access-control features;
 - `io.jsonwebtoken`: for token;
-- `spring-boot-starter-data-jpa`: for relational database access, if we use mongodb, don't include this one;
+- `spring-boot-starter-data-jpa`: for relational database access, if we use `mongodb`, don't include this one;
 - `spring-boot-starter-data-mongodb`: for mongo database access;
-- `aws-java-sdk`: aws related development.
+- `aws-java-sdk`: AWS related development.
 
-Every time when you add new dependency, you will have a gradle icon:
+Every time when you add new dependency, you will have a `gradle` icon:
 
 <img src="img/load_dependencies.png" alt="load icon" style="zoom:50%;" />
-
-
 
 click on the icon to load the new dependency.
 

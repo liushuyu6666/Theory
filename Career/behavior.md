@@ -1,0 +1,3 @@
+# Introduce yourself
+
+I am now a graduate student in University of Ottawa, majoring in Electronic Engineering and Computer Science. I used to be a data analyst in my first job from 2017 - 2018, responsible for developing Online Report System, where I not only learned some technical skills such as mining the data or develop the online system, but also know how to communicate with customer and how to find their demands clearly. I still remember every time when I finish the project the customers are grateful to me and hopes for the next phase of the project. This kind of experience makes me feel like a person who are needed by others and could contribute to the whole society. That's why I enjoy and be enthusiastic for this job.

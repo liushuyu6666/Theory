@@ -14,6 +14,15 @@ const res = arr.reduce((acc,curr)=> (acc[curr]='',acc),{});
 - `acc` is returning the accumulator once loop end. 
 - `{}` initial value of the `acc`.
 
+### check if `object` is empty
+
+```javascript
+var o = {};
+if(o) // check if undefined or empty
+```
+
+
+
 ## asynchronous
 
 ### callback function
