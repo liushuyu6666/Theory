@@ -24,7 +24,9 @@ A collection of pods.
 
 ### `work node`
 
-Each worker `node` can hold one or more pods. The worker node has three components:
+Each worker `node` can hold one or more pods. 
+
+#### components
 
 - `kubelet process` : connect to other nodes
   - runs on all worker nodes
@@ -45,20 +47,40 @@ Each worker `node` can hold one or more pods. The worker node has three componen
 
 ### `master node`
 
-communicates with all worker nodes and decides when to create or destroy a container.
+- **managing** other `worker nodes` and **balance** the workloads. 
+- It provides the control plane; Kubernetes cluster services
+- It handles the **scheduling** of work in the cluster, including:
+  - Deploying and starting up objects on worker nodes in order to meet the configured requirements (desired state)
 
-managing other `worker nodes` and balance the workloads. Admin can access `master node` through `Kubectl (command-line interface)` and `Dashboard UI (web-based user interface)` There are four components in the master node, which forms the `Kubernetes Control Plane` together. They are
+Admins can access the Kubernetes master node to manage the Kubernetes cluster using:
+
+1. `kubectl` (command-line interface)
+2. Dashboard UI (web-based user interface)
+
+#### components of control plane
+
+These components together form the **Kubernetes Control Plane.**
 
 - `API Server` interface
-  - it manage the interaction between the external and internal, such as authentication and authorization.
+  - Key management component of the entire cluster
+  - The main access point to the cluster
+  - Provides both internal and external interfaces
+  - Updates the `etcd` with the changes in the cluster and it invokes the Scheduler and `kubelet` process when a new pod is created
+  - Responsible for the authentication and authorization allowing administrators to interact with the API Server
 - `etcd`: store state and configuration data
-  - contains the state and configuration data for the entire cluster. Each code should access to it. 
-  - Can run as a `distributed database` or `standalone database` for multiple master node or single-master node.
+  - Persistent and distributed key-value store that contains the state and configuration data for the entire cluster.
+  - It can be configured on the master node or configured externally.
+  - Each node has access to etcd, and through it, learns how to maintain configuration of its running containers. We can run etcd as a:
+    1. **Distributed Database:** In a multi-node cluster with multiple master nodes; implements logs to make sure no conflicts between masters
+    2. **Standalone Database:** In a single-master node cluster
 - `scheduler`: resources
-  - assign newly created and unscheduled `pods` to `nodes`
-  - Some `pods` may require a specific set of resources to run, and it is the scheduler's responsibility to find a `node` that meets those requirements.
-  - For this purpose, the scheduler must know the resource requirements, resource availability of the `nodes`, and other user-provided constraints in order to maximize the proper resource utilization.
+  - Assigns newly created and unscheduled pods to nodes
+  - Some pods may require a specific set of resources to run, and it is the scheduler's responsibility to find a node that meets those requirements.
+  - For this purpose, the scheduler must know the resource requirements, resource availability of the nodes, and other user-provided constraints in order to maximize the proper resource utilization.
 - `controller manager`: state
+  - Supervises different controllers that drive actual cluster state toward the desired cluster state.
+  - Communicates with the API server to create, update, and delete the resources it manages (pods, service endpoints, etc.).
+  - Watches the state of the cluster through the API server and makes the necessary changes to move the cluster from current state* present in the etcd to the desired state defined in the configuration file*. This usually involves operations like application scaling up/down or adjusting endpoints, etc.
 
 [details](https://kubernetes.io/docs/concepts/overview/components/#control-plane-components)
 
