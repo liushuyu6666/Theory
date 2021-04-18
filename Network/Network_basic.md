@@ -472,7 +472,7 @@ The topology of our network
 
 - In each router:
 
-  ```bash
+  ```shell
   configure # into configure mode
   set protocols ospf parameters router-id 1.1.1.x # Set a "router-id" of 1.1.1.X, replacing X with the corresponding router number. For example, 1.1.1.3 would be the router-id of router-3.
   set protocols ospf area 0 network <network>/<netmask> # pay attention, this is the network ip address, not the interface's ip address.

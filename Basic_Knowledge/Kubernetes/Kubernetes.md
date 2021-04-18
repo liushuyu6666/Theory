@@ -10,14 +10,6 @@ an open-source `container` orchestration tool for automating deployment, scaling
 
 The hierarchy is `containers -> pods -> nodes -> cluster -> objects`
 
-- Why use `kubernetes`
-  - **Self-healing:** restarts containers that fail, replaces and kills irresponsive containers, and re-distributes replicas to match desired and active states
-  - **Load balance** network traffic allowing stable deployment
-  - **Scale up** a containerized application to meet the demand
-  - **Speeds up** an application development process by making easy, automated deployments, updates, and by managing all the applications and services with almost zero downtime.
-  - **Resource optimization:** Provides better usage of hardware needed to run applications.
-  - **Ease of use:** It can create thousands of instances of an application in single line command.
-
 ## `pods`
 
 In `Kubernetes`, `Pods` are responsible for running your `containers`. Every `Pod` holds at least one `container`, and controls the execution of that `container`. When the `containers` exit, the `Pod` dies too. All `containers` within a `pod` share same resources (IP, storage, RAM).
@@ -30,21 +22,28 @@ A collection of pods.
 
 - A physical or virtual machine that serves a specialized function either as a `master node` or a `worker node`.
 
-`work node`
+### `work node`
 
 Each worker `node` can hold one or more pods. The worker node has three components:
 
-- `kubelet process` : work for `control plane`
-  - connect the control plane (via the `API Server`) with containers (via `container runtime interface CRI`): takes instructions from the control plane to manage the state of the node and collects performance and health information. 
-  - `nodes` communicate with each other via the `Kubelet process`.
-- `Container Runtime Engine`: manage `container`
-  -  (like `Docker`) to run and manage a container's life cycle.
+- `kubelet process` : connect to other nodes
+  - runs on all worker nodes
+  - connect the control plane (via the `API Server`) with containers (via `container runtime interface CRI`): takes instructions from the **control plane** to manage the **state of the node**: starting, stopping, and maintaining application containers. 
+  - Collects **performance and health information** of the pods and their running containers, and then **shares** that information with the control plane to help it make scheduling decisions.
+  - Connects to the **container runtime** using the Container Runtime Interface (CRI).
+- `Container Runtime Engine`: run`container`
+  -  to run and manage a container's life cycle.
+  -  Kubernetes supports various container runtimes such as Docker, CRI-O, containerd, etc.
   -  Docker engine is the most common container runtime and is almost ubiquitous now.
-- `kube-proxy` interface and balance
-  -  that exposes the node to the external world 
-  -  is responsible for connectivity and load balancing between the pods.
+- `kube-proxy` connect to the external world and load balancing between the pods
+  - on **every node**
+  - is responsible for **routing traffic** to the appropriate pod based on the **incoming IP address**
+  - that exposes the node to the **external world** 
+  - Prevents **IP conflicts** on the pods
+  - Responsible for **port mappings**
+  - is responsible for connectivity and **load balancing** between the pods.
 
-## `master node`
+### `master node`
 
 communicates with all worker nodes and decides when to create or destroy a container.
 
@@ -207,6 +206,8 @@ The commands below will set up the proper location so that the cluster can use t
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
   ```
+  
+  - **mkdir** -**p** means: create the directory and, if required, all parent directories.
 
 ## network add-on
 
@@ -382,7 +383,7 @@ Normally, the `Kubernetes master` is responsible for scheduling work onto `worke
 
 - check by `kubectl get deployments` or `kubectl get rs`.
 
-- sacle by ` kubectl scale deployments [DeploymentsName] --replicas=8`
+- scale by ` kubectl scale deployments [DeploymentsName] --replicas=8`
 
 - delete by `kubectl delete deployment [Name]` or `kubectl delete -f [fileName]`
 
@@ -439,9 +440,9 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
 
 ## `NodePort service`
 
-- This `NP service` is relative to two IP and two port:
-  - `inner`: the ip and port of itself, the port can be specified in the `.yaml` file.
-  - `outer`: the node's ip (usually the `VM`) and port, port can be specified or not.
+- This `NP service` is relative to two IP and two port. The first IP is about the `clusterip service` that `NP service` create automatically. The second is about the node's ip.
+  - `ClusterIP service`: use `kubectl get services` to see the automatically created `ClusterIP service`'s ip.
+  - `node`: the node's ip (usually the `VM`) use `kubectl describe pods`
 
 - create `.yaml` file
 
@@ -470,7 +471,7 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
   <img src="img/describe_NodePort.png" style="zoom:50%;" />
 
   - `selector` 
-  - `NodePort` id is 10.110.185.146 and here are two `ports`: 8079(`inner`)/30962(`outer`), the `targetPort (PodPort)` is 80.
+  - `clusterip service`'s id is 10.110.185.146 and here are two `ports`: 8079(`clusterip service`)/30962(`node`), the `targetPort (PodPort)` is 80.
 
 ## connectivity and access to `pod`
 
@@ -478,19 +479,19 @@ Here are actually four ways to access to the `nginx pod`. List the ip and port w
 
 |            |                 pod                 |          CIP service          |                       NodePort service                       |
 | ---------- | :---------------------------------: | :---------------------------: | :----------------------------------------------------------: |
-| IP         |            192.168.0.175            |         10.107.70.131         | `inner`:10.110.185.146 <br />`outer`: 10.169.178.22 (node IP, since node is usually the `VM`) |
-| port       | 80(since `Nginx` listen to 80 port) |             8080              |               `inner`:8079<br />`outer`:30962                |
-| map        |                                     | `pod:80 <-> CIP service:8080` | `inner`:`pod:80<->NP:8079`<br />`outer`:`pod:80<->nodeIp:30960` |
-| how to get |         `describe` command          |      `get` or `describe`      |    `inner`: `get` or `describe`<br />`outer`: `ifconfig`     |
+| IP         |            192.168.0.175            |         10.107.70.131         | `clusterip service ` which is created by the `NodePort Service` automatically:10.110.185.146 <br />`nodePort`: 10.169.178.22 (node IP, since node is usually the `VM`) |
+| port       | 80(since `Nginx` listen to 80 port) |             8080              |             `CIP service`:8079<br />`node`:30962             |
+| map        |                                     | `pod:80 <-> CIP service:8080` | `inner`:`pod:80<->CIP:8079`<br />`outer`:`pod:80<->nodeIp:30960` |
+| how to get |         `describe` command          |      `get` or `describe`      | `CIP`: `get` or `describe`<br />node: `kubectl get pods` you will see a Node item. |
 
-Here the `NP service` has two part, the `inner` means the IP of itself in the node and its inward port, the `outer` means the IP of the node (usually the `VM`) and outward port.
+Here the `NP service` has two part, the `CIP` means the IP of `CIP` which was created by `NP service` automatically, the `outer` means the IP of the node (usually the `VM`) and outward port.
 
 access to the `Nginx Pod`
 
 - access to the pod directly through `curl [Pod_IP]:[TargetPort]` that is `curl 192.168.0.175:80`.
 - (if `CIP service` is running) access through `CIP service` through `curl [CIP_IP]:[Port]` that is `curl 10.107.70.131:8080`.
-- (if `NP service` is running) access through `NP service` through `curl [NP_IP]:[nodePort]` this is `curl 10.110.185.146:8079`
-- **external access**: (if `NP service` is running) access through `NP service` externally.  First use `ifconfig` to find the `ens3` 's `inet`, which is the `Node`'s outer IP. then `curl [node_ip]:[outer_port]`, that is `curl 10.169.178.22:30962`.
+- (if `NP service` is running) access through `CIP service` created by `NP service` through `curl [CIP]:[CIPport]` this is `curl 10.110.185.146:8079`
+- **external access**: (if `NP service` is running) access through `NP service` externally.  First use `kubectl describe pods` to find it under the Node entry, then `curl [node_ip]:[outer_port]`, that is `curl 10.169.178.22:30962`.
 
 ## label and unlabel
 
