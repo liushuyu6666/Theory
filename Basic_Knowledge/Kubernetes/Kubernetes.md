@@ -62,8 +62,7 @@ Admins can access the Kubernetes master node to manage the Kubernetes cluster us
 These components together form the **Kubernetes Control Plane.**
 
 - `API Server` interface
-  - Key management component of the entire cluster
-  - The main access point to the cluster
+  - The main access point to the cluster, Key management component of the entire cluster.
   - Provides both internal and external interfaces
   - Updates the `etcd` with the changes in the cluster and it invokes the `scheduler` and `kubelet` process when a new pod is created
   - Responsible for the authentication and authorization allowing administrators to interact with the API Server
@@ -95,22 +94,21 @@ The `cluster` is a collection of `nodes` managed by one or more `master nodes`.
 
 ## `Replication Controller`
 
-- maintain the number of `pods`.
-- during the scaling process, your application is never interrupted (unless you specified 0 replicas), you can continue to refresh and make requests to your webpage and it will still work.
+- **maintain** the number of `pods`.
+- during the scaling process, your application is **never interrup**ted (unless you specified 0 replicas), you can continue to refresh and make requests to your webpage and it will still work.
 
 ## `ReplicaSets`
 
 - next generation of `Replication Controller`.
 
 
-- A `ReplicaSet` ensures that a set of identically configured `Pods` are running at the desired replica count. If a `Pod` drops off, the `ReplicaSet` brings a new one online as a replacement.
+- A `ReplicaSet` ensures that **a set of** identically configured `Pods` are running at the desired replica count. If a `Pod` drops off, the `ReplicaSet` brings a new one online as a replacement.
 - a low-level abstraction
 
 ## `deployment`
 
 - Uses a `ReplicaSet` to keep the pods running
-- Supports rolling updates and rollbacks; rollouts can be paused.
-- Keeps history of past deployments and allows the administrator to easily roll back to previous deployments.
+- Keeps history of past deployments and allows the administrator to easily **roll back** to previous deployments.
 - Provides high-level abstraction.
 - Offers sophisticated logic for deploying, updating, and scaling a set of pods within a cluster.
 
@@ -195,9 +193,9 @@ a `yml` file, work with `kubectl`, is composed of five fields:
 
 - use `selector` and `labels` to specify the connectivity between `pod` and `service` not the `name` but the `labels`
 - three `ports`
-  - `node port`: Same for all nodes in a cluster
-  - `port`
-  - `target port`
+  - `node port`: Same for all nodes in a cluster.
+  - `port`: `CIP` port
+  - `target port`: pod port
 - `services`
   - `nodeport service` : 
     - It forwards the request to a `ClusterIP service`, the latter will forward the request to the port on the `pod` running the application.
@@ -232,6 +230,8 @@ In the Lab, we will get three section:
 They use the `label` to specify the connectivity.
 
 In the Lab, node is the remote VM.
+
+The Lab revolves two resources - `pods` and `services`. Essentially, `RC`, `RS` and `deployment` are maintaining `pods`
 
 ## install
 
@@ -366,7 +366,7 @@ Normally, the `Kubernetes master` is responsible for scheduling work onto `worke
 
 - create `rc.yaml`
 
-  ```bash
+  ```yaml
   apiVersion: v1
   kind:  ReplicationController
   metadata:
@@ -392,15 +392,17 @@ Normally, the `Kubernetes master` is responsible for scheduling work onto `worke
 
 - create the `Replication Controller` by `kubectl create -f rc.yaml` and check it by `kubectl get rc`
 
-- scale `rc` by `kubectl scale rc nginx-rc --replicas=10`
+- scale `rc` by `kubectl scale rc nginx-rc --replicas=10`, As they come up, pods go through these three states:
+
+  - `Pending`
+  - `ContainerCreating`
+  - `Running`
 
 - delete `rc` by `kubectl delete rc [name of rc]` or `kubectl delete -f rc.yaml `
 
 - pay attention, if you don't delete `rc` first, you will never delete all `pods` maintained by `rc`.
 
 ## `Deployment` and `Replica Set`
-
-`Replica Set` , which can be managed by the `Deployment`. is the next generation of `Replication Controller`. `Deployment` creates and uses the `RS` to sclae up and down the `set of pods`, besides, `Deployment` can be rolling updates and rollbacks, etc.
 
 - create a `deployment.yaml`
 
@@ -438,11 +440,13 @@ Normally, the `Kubernetes master` is responsible for scheduling work onto `worke
 
   - when you create `deployment`, the `RS` will also be created.
 
+  - in template, it defines the new `pod`, which has no relationship with the `pod` we define before.
+
   - Here is how to connect to the `clusterIP service`
 
     - configure `clusterip_for_deployment.yaml`
 
-      ```bash
+      ```yaml
       apiVersion:  v1
       kind: Service
       metadata:
@@ -503,8 +507,11 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
       app: nginx-server-lsy
   ```
 
-  - pay attention, the `spec -> selector -> app`'s name in `clusterip.yaml` must be the same as the pod's `metadata -> labels -> app`'s label in `pod.yaml`, or the `CIP service` can't find the `pod`.
+  - pay attention, the `spec -> selector -> app`'s name in `clusterip.yaml` must be the same as the pod's `metadata -> labels -> app`'s label in `pod.yaml`, or the `CIP service` can't find the `pod`. Besides, if you want to connect to the pods managed by the deployment, it should be the same as the deployments' label 2, please check in the [`Deployment` and `Replica Set` section](#deployment-and-replica-set).
+
   - In the `ports` field, it maps `port` with `targetPort`, since `selector` specifies the `label` of the app, all `pods` connect to this `CIP service` will use the same `targetPort`.
+
+    
 
 - create the `CIP service` by `kubectl create -f clusterip.yaml`.
 
@@ -513,7 +520,7 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
   <img src="img/describe_CIP_service.png" style="zoom:80%;" />
 
   - `Endpoints` means `<PodIP>:<TargetPort>`, remember both `PodIP` and `TargetPort` are relative to `Pod`. If you check `Pod`'s description, you will find the `Ip` field is the same as the `<PodIP>` in the `Endpoints`.
-  - `Ip` field means `CIP service Ip`  and equalls to `ClusterIP`.
+  - `Ip` field means `CIP service Ip`  and equals to `ClusterIP`.
   - `Port` fields means `Port`.
   - The `CIP service`'s IP is 10.107.70.131 the `port` is 8080, since the `selector` is the `pod` above, so that is `10.107.70.131:8080 <-> 192.168.0.31:80`
 
@@ -561,14 +568,14 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
 
 ## connectivity and access to `pod`
 
-Here are actually four ways to access to the `nginx pod`. List the ip and port we need:
+Here are actually four ways to access to the `nginx pod`. List the IP and port we need:
 
-|            |                 pod                 |          CIP service          |                       NodePort service                       |
-| ---------- | :---------------------------------: | :---------------------------: | :----------------------------------------------------------: |
-| IP         |            192.168.0.175            |         10.107.70.131         | `clusterip service ` which is created by the `NodePort Service` automatically:10.110.185.146 <br />`nodePort`: 10.169.178.22 (node IP, since node is usually the `VM`) |
-| port       | 80(since `Nginx` listen to 80 port) |             8080              |             `CIP service`:8079<br />`node`:30962             |
-| map        |                                     | `pod:80 <-> CIP service:8080` | `inner`:`pod:80<->CIP:8079`<br />`outer`:`pod:80<->nodeIp:30960` |
-| how to get |         `describe` command          |      `get` or `describe`      | `CIP`: `get` or `describe`<br />node: `kubectl get pods` you will see a Node item. |
+|                           |                 pod                 |          CIP service          |                       NodePort service                       |
+| ------------------------- | :---------------------------------: | :---------------------------: | :----------------------------------------------------------: |
+| IP                        |            192.168.0.175            |         10.107.70.131         | `clusterip service ` which is created by the `NodePort Service` automatically:10.110.185.146 <br />`nodePort`: 10.169.178.22 (node IP, since node is usually the `VM`) |
+| port                      | 80(since `Nginx` listen to 80 port) |             8080              |             `CIP service`:8079<br />`node`:30962             |
+| map                       |                                     | `pod:80 <-> CIP service:8080` | `inner`:`pod:80<->CIP:8079`<br />`outer`:`pod:80<->nodeIp:30960` |
+| how to get the IP address |         `describe` command          |      `get` or `describe`      | `CIP`: `get` or `describe`<br />node: `kubectl get pods` you will see a Node item. |
 
 Here the `NP service` has two part, the `CIP` means the IP of `CIP` which was created by `NP service` automatically, the `outer` means the IP of the node (usually the `VM`) and outward port.
 
