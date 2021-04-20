@@ -12,9 +12,11 @@ The hierarchy is `containers -> pods -> nodes -> cluster -> objects`
 
 ## `pods`
 
-In `Kubernetes`, `Pods` are responsible for running your `containers`. Every `Pod` holds at least one `container`, and controls the execution of that `container`. When the `containers` exit, the `Pod` dies too. All `containers` within a `pod` share same resources (IP, storage, RAM).
+In `Kubernetes`, 
 
-A `pod` is the smallest entity in the `Kubernetes universe`.
+- `Pods` are responsible for running your `containers`. Every `Pod` holds at least one `container`, and controls the execution of that `container`. When the `containers` exit, the `Pod` dies too. 
+- All `containers` within a `pod` share same resources (IP, storage, RAM).
+- A `pod` is the smallest entity in the `Kubernetes universe`.
 
 ## `node`
 
@@ -30,16 +32,14 @@ Each worker `node` can hold one or more pods.
 
 - `kubelet process` : connect to other nodes
   - runs on all worker nodes
-  - connect the control plane (via the `API Server`) with containers (via `container runtime interface CRI`): takes instructions from the **control plane** to manage the **state of the node**: starting, stopping, and maintaining application containers. 
-  - Collects **performance and health information** of the pods and their running containers, and then **shares** that information with the control plane to help it make scheduling decisions.
-  - Connects to the **container runtime** using the Container Runtime Interface (CRI).
-- `Container Runtime Engine`: run`container`
+  - takes instructions from the **control plane** (via the `API Server`) to manage the **state of the node** (via `container runtime interface CRI`): starting, stopping, and maintaining application containers. 
+  - Collects **performance and health information** of the pods and their running containers, and then **shares** that information with the control plane to help it make **scheduling** decisions.
+- `Container Runtime Engine`: relative to the`container`
   -  to run and manage a container's life cycle.
-  -  Kubernetes supports various container runtimes such as Docker, CRI-O, containerd, etc.
-  -  Docker engine is the most common container runtime and is almost ubiquitous now.
+  -  Kubernetes supports various container runtimes such as Docker, CRI-O, containerd, etc. Docker engine is the most common container runtime and is almost ubiquitous now.
 - `kube-proxy` connect to the external world and load balancing between the pods
   - on **every node**
-  - is responsible for **routing traffic** to the appropriate pod based on the **incoming IP address**
+  - is responsible for **routing** traffic to the appropriate pod based on the incoming IP address
   - that exposes the node to the **external world** 
   - Prevents **IP conflicts** on the pods
   - Responsible for **port mappings**
@@ -48,7 +48,7 @@ Each worker `node` can hold one or more pods.
 ### `master node`
 
 - **managing** other `worker nodes` and **balance** the workloads. 
-- It provides the control plane; Kubernetes cluster services
+- It provides the control plane; Kubernetes cluster services.
 - It handles the **scheduling** of work in the cluster, including:
   - Deploying and starting up objects on worker nodes in order to meet the configured requirements (desired state)
 
@@ -65,22 +65,23 @@ These components together form the **Kubernetes Control Plane.**
   - Key management component of the entire cluster
   - The main access point to the cluster
   - Provides both internal and external interfaces
-  - Updates the `etcd` with the changes in the cluster and it invokes the Scheduler and `kubelet` process when a new pod is created
+  - Updates the `etcd` with the changes in the cluster and it invokes the `scheduler` and `kubelet` process when a new pod is created
   - Responsible for the authentication and authorization allowing administrators to interact with the API Server
 - `etcd`: store state and configuration data
-  - Persistent and distributed key-value store that contains the state and configuration data for the entire cluster.
-  - It can be configured on the master node or configured externally.
-  - Each node has access to etcd, and through it, learns how to maintain configuration of its running containers. We can run etcd as a:
+  - Persistent and distributed key-value store that contains the **state** and configuration **data** for the entire cluster.
+  - It can be **configured** on the master node or configured externally.
+  - **Each node has access to etcd**, and through it, learns how to maintain configuration of its running containers. We can run etcd as a:
     1. **Distributed Database:** In a multi-node cluster with multiple master nodes; implements logs to make sure no conflicts between masters
     2. **Standalone Database:** In a single-master node cluster
 - `scheduler`: resources
   - Assigns newly created and unscheduled pods to nodes
   - Some pods may require a specific set of resources to run, and it is the scheduler's responsibility to find a node that meets those requirements.
   - For this purpose, the scheduler must know the resource requirements, resource availability of the nodes, and other user-provided constraints in order to maximize the proper resource utilization.
-- `controller manager`: state
+- `controller manager`: manage
   - Supervises different controllers that drive actual cluster state toward the desired cluster state.
-  - Communicates with the API server to create, update, and delete the resources it manages (pods, service endpoints, etc.).
-  - Watches the state of the cluster through the API server and makes the necessary changes to move the cluster from current state* present in the etcd to the desired state defined in the configuration file*. This usually involves operations like application scaling up/down or adjusting endpoints, etc.
+  - Communicates with the API server to **create, update, and delete** the resources it manages (pods, service endpoints, etc.).
+  - **Watches the state** of the cluster through the API server and makes the necessary changes to move the cluster from current state present in the etcd to the desired state defined in the configuration file. This usually involves operations like application scaling up/down or adjusting endpoints, etc.
+- summary: it just looks like the spring boot project I did, `etcd` is the database to store state, `API server` is the backend program providing tools for update `etcd` and CRUD pods. controller manager is the man who really do these things.
 
 [details](https://kubernetes.io/docs/concepts/overview/components/#control-plane-components)
 
@@ -88,27 +89,75 @@ These components together form the **Kubernetes Control Plane.**
 
 The `cluster` is a collection of `nodes` managed by one or more `master nodes`.
 
+### cluster type
+
+<img src="img/cluster_type.png" style="zoom:67%;" />
+
 ## `Replication Controller`
 
-to manage a set of `pods`, the number of `pods` will be maintained.
+- maintain the number of `pods`.
+- during the scaling process, your application is never interrupted (unless you specified 0 replicas), you can continue to refresh and make requests to your webpage and it will still work.
 
 ## `ReplicaSets`
 
-next generation of `Replication Controller`.
+- next generation of `Replication Controller`.
 
-A `ReplicaSet` ensures that a set of identically configured `Pods` are running at the desired replica count. If a `Pod` drops off, the `ReplicaSet` brings a new one online as a replacement.
+
+- A `ReplicaSet` ensures that a set of identically configured `Pods` are running at the desired replica count. If a `Pod` drops off, the `ReplicaSet` brings a new one online as a replacement.
+- a low-level abstraction
 
 ## `deployment`
 
-A `Kubernetes` object that controls deploying and maintaining a set of `pods`. Uses a `ReplicaSet` to keep the `pods` running. Supports rolling updates and rollbacks, rollouts can be paused. So everytime when you create `deployment` you can see the `ReplicaSet (RS)`.
+- Uses a `ReplicaSet` to keep the pods running
+- Supports rolling updates and rollbacks; rollouts can be paused.
+- Keeps history of past deployments and allows the administrator to easily roll back to previous deployments.
+- Provides high-level abstraction.
+- Offers sophisticated logic for deploying, updating, and scaling a set of pods within a cluster.
 
 It generates a specified number of `pods` as you configure in `yaml` file automatically with the same `label`. Remember, `deployment` itself don't have `IP`, so if you want to connect to the `pods` generated by a certain `deployment`, don't attempt to connect to the `depolyment` but try to use the `label`.
 
 ##  `service`
 
+It provides network connectivity to pods in a given cluster.
+
 A service inside a Kubernetes node acts as a virtual bridge allowing a set of pods to “talk” to another set. It enables communication within the `Kubernetes` cluster and outside.
 
+- As mentioned before, the proxy component of the node enables communication within the Kubernetes cluster and outside.
+
+- It exposes the frontend apps making them available to users.
+
+- It allows communication between frontend apps and backend apps.
+
+- It allows connecting to external data sources.
+
 ![service of Kubernetes](img/service_of_kube.png)
+
+### `ClusterIP service`
+
+- The default type of service, it creates a virtual IP to enable **internal** communication between different apps; front-end and backend. It does not allow external access
+
+- Kubernetes has a default `ClusterIP service` called "`kubernetes`" that can be viewed using the below command:
+
+  ```shell
+  kubectl get svc
+  ```
+
+- A `ClusterIP service` requires two parts:
+
+  1. `Port`
+  2. `TargetPort`
+
+- A `ClusterIP service` can span multiple pods and nodes allowing communication between different apps within a Kubernetes cluster.
+
+### `NodePort service`
+
+- (static port): A type of service that exposes the service on each node’s IP at a static port (`NodePort`), making the internal applications accessible from **outside** the cluster at <NodeIP>:<NodePort>. A `NodePort` service **listens** to the static port (`NodePort`)
+- (requirements) It requires three ports:
+  1. `Port`
+  2. `TargetPort`
+  3. `NodePort`: Same for all nodes in a cluster
+- (work with `ClusterIP service`): A `ClusterIP service`, to which the `NodePort` service will route, is automatically **created**. It **forwards** the request to a `ClusterIP service`. The latter will forward the request to the port on the pod running your application.
+- (reachable): `NodePort` services are reachable by clients on the same LAN or clients who can ping the Kubernetes host nodes. But they cannot be reached from anywhere on the Internet.
 
 ## `secret`
 
@@ -158,6 +207,20 @@ a `yml` file, work with `kubectl`, is composed of five fields:
     - communication bewteen `pod` and `pod` across node in a `Kubernetes cluster`. 
     - can't access to the external access.
 
+## `Kubeadm`
+
+The following tasks do not fall under the scope of `kubeadm` to keep it lean and focused:
+
+- Infrastructure Provisioning
+- Specific cloud provider integrations
+- Third-party Networking
+
+## `kubectl`
+
+- `kubectl` is the **command line interface** tool used in Kubernetes for communication with the **Kubernetes API Server** (on the master node).
+- It allows to apply **manifest files** to the cluster and the cluster will take care of creating the defined objects.
+- It provides the basis of **orchestration** in Kubernetes.
+
 # Practice and Lab
 
 In the Lab, we will get three section:
@@ -195,8 +258,9 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
   - `--dry-run`: don't apply any changes; just output what would be done. [reference](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#options), it will tell you the errors when they occur.
   - `--pod-network-cidr [string]`: Specify range of IP addresses for the `pod` network. If set, the control plane will automatically allocate [`CIDR`](https://www.keycdn.com/support/what-is-cidr) for every node. [reference](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#options)
-  - after this command, we use `docker ps` will not see a lot of `Docker containers`.
-
+  - `kubeadm init` This command is responsible for initializing the control plane component required for a single master node Kubernetes cluster.
+- after this command, we use `docker ps` will not see a lot of `Docker containers`.
+  
 - If you have some errors:
 
   - **Issue**: `[ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridge-nf-call-iptables does not exist`
@@ -419,7 +483,7 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
 
 ## `ClusterIP service` CIP
 
-`Kubernetes` has a default ClusterIP service called "kubernetes" that can be viewed. So, anytime using `kubectl get svc` you can find it.
+`Kubernetes` has a default `ClusterIP` service called "`kubernetes`" that can be viewed. So, anytime using `kubectl get svc` you can find it.
 
 - create `clusterip.yaml`
 
