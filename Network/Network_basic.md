@@ -77,7 +77,7 @@ The final data should looks like this:
 #### Application Layer
 
 - When you send an email. it will be first processed by Application Layer protocol, SMTP.
-- This layer specifies how data encoded, compressed or encrypted and how sessions should be managed. Analog: translate the language of this letter to the language that recipient could understand.
+- This layer specifies how data **encoded**, compressed or encrypted and how sessions should be managed. Analog: translate the language of this letter to the language that recipient could understand.
 - Other Protocols are **HTTP**, **FTP**, **DNS**, **SMTP**.
   - **HTTP**: for the transfer of information on the Internet and the World Wide Web.
   - **FTP**: transfer data or file from one computer to another through a network.
@@ -337,9 +337,35 @@ In this scenario, Computer A send data to Computer C across network.
 - if a router doesn't know the IP address, it will send the package to the default path of the router table.
 - **router** is a Layer 3 device and **switch** is a Layer 2 device. The former could update the MAC address and inspect IP address, the latter could only inspect the MAC address.
 
-### routing protocols
+### routing protocol
+
+Examples of routing protocols include RIP, OSPF, EIGRP, and BGP
+
+#### classes of routing protocols
+
+There are two classes of dynamic routing protocols:
+
+**IGP:** Interior Gateway Protocol: IGP represents routing protocols that are used to exchange routing information between gateways within the same autonomous system (AS).
+
+**EGP:** Exterior Gateway Protocol: EGP represents routing protocols that are used to exchange routing information between different autonomous systems. BGP is the industry-standard Exterior Gateway Protocol.
+
+IGP protocols are further divided into two types of routing protocols:
+
+**Distance-Vector:** A routing protocol that uses distance as a metric to determine the best route to the destination. Here distance refers to the number of hops (routers) the packet passes through on its way to its destination. RIP is a distance-vector protocol.
+
+**Link-State:** A routing protocol that uses speed or bandwidth as a metric to determine the best route to the destination. Simply put, it chooses the faster path. This class of routing protocols exchange what is known by "Hello messages" to establish and maintain neighbor relationships. OSPF and EIGRP are link-state protocols.
+
+![classes of routing protocols](img/classes_of_routing_protocols.png)
+
+#### Administrative Distance
+
+Administrative distance is the measure of trustworthiness of routing information. It is represented by a number from 0 to 255, where '0' is the most trusted route.
 
 #### OSPF (Open Shortest Path First)
+
+##### overview
+
+Open Shortest Path First (OSPF) is a classless, dynamic routing protocol used to distribute routing information within an autonomous system (AS). Because it is an open standard, it is widely used as an Interior Gateway Protocol (IGP) by all of the major vendors. OSPF uses Dijkstra’s algorithm to calculate the shortest path between any two routers in a network. OSPF uses “cost” as the metric and its administrative distance is 110 by default.
 
 - **Configure**: Each **OSPF-enabled** router sends “Hello” packets out all of its **OSPF-enabled** interfaces to determine if any neighbors exist on those links. If a neighbor is present, then it will try to form an adjacency with it. This way, all the routers in the network form adjacencies with their neighbors.
 
