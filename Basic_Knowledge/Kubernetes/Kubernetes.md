@@ -132,7 +132,7 @@ A service inside a Kubernetes node acts as a virtual bridge allowing a set of po
 
 ### `ClusterIP service`
 
-- The default type of service, it creates a virtual IP to enable **internal** communication between different apps; front-end and backend. It does not allow external access
+- The default type of service, it creates a virtual IP to enable **internal communication** span multiple pods and nodes allowing communication between different apps within a Kubernetes cluster, such as front-end and backend. It does not allow external access.
 
 - Kubernetes has a default `ClusterIP service` called "`kubernetes`" that can be viewed using the below command:
 
@@ -145,7 +145,6 @@ A service inside a Kubernetes node acts as a virtual bridge allowing a set of po
   1. `Port`
   2. `TargetPort`
 
-- A `ClusterIP service` can span multiple pods and nodes allowing communication between different apps within a Kubernetes cluster.
 
 ### `NodePort service`
 
@@ -155,7 +154,7 @@ A service inside a Kubernetes node acts as a virtual bridge allowing a set of po
   2. `TargetPort`
   3. `NodePort`: Same for all nodes in a cluster
 - (work with `ClusterIP service`): A `ClusterIP service`, to which the `NodePort` service will route, is automatically **created**. It **forwards** the request to a `ClusterIP service`. The latter will forward the request to the port on the pod running your application.
-- (reachable): `NodePort` services are reachable by clients on the same LAN or clients who can ping the Kubernetes host nodes. But they cannot be reached from anywhere on the Internet.
+- (reachable): `NodePort services` are reachable by clients on the same LAN or clients who can ping the Kubernetes host nodes. But they cannot be reached from anywhere on the Internet.
 
 ## `secret`
 
@@ -379,7 +378,7 @@ Normally, the `Kubernetes master` is responsible for scheduling work onto `worke
       metadata:
         name: nginx-replicationController-lsy
         labels:
-          app: nginx-server
+          app: nginx-server-lsy
       spec:
         containers:
         - name: nginx-lsy
@@ -406,7 +405,7 @@ Normally, the `Kubernetes master` is responsible for scheduling work onto `worke
 
 - create a `deployment.yaml`
 
-  ```bash
+  ```yaml
   apiVersion: apps/v1
   kind:  Deployment
   metadata:
@@ -491,14 +490,13 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
 
 - create `clusterip.yaml`
 
-  ```bash
+  ```yaml
   apiVersion:  v1
   kind: Service
   metadata:
         name: nginx-service-cluster-lsy
-  
   spec:
-    type: ClusterIP
+    type: "ClusterIP"
     ports:
       - port: 8080
         protocol: TCP
@@ -506,13 +504,13 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
     selector: 
       app: nginx-server-lsy
   ```
-
-  - pay attention, the `spec -> selector -> app`'s name in `clusterip.yaml` must be the same as the pod's `metadata -> labels -> app`'s label in `pod.yaml`, or the `CIP service` can't find the `pod`. Besides, if you want to connect to the pods managed by the deployment, it should be the same as the deployments' label 2, please check in the [`Deployment` and `Replica Set` section](#deployment-and-replica-set).
-
-  - In the `ports` field, it maps `port` with `targetPort`, since `selector` specifies the `label` of the app, all `pods` connect to this `CIP service` will use the same `targetPort`.
-
-    
-
+  
+- pay attention, the `spec -> selector -> app`'s name in `clusterip.yaml` must be the same as the pod's `metadata -> labels -> app`'s label in `pod.yaml`, or the `CIP service` can't find the `pod`. Besides, if you want to connect to the pods managed by the deployment, it should be the same as the deployments' label 2, please check in the [`Deployment` and `Replica Set` section](#deployment-and-replica-set).
+  
+- In the `ports` field, it maps `port` with `targetPort`, since `selector` specifies the `label` of the app, all `pods` connect to this `CIP service` will use the same `targetPort`.
+  
+  
+  
 - create the `CIP service` by `kubectl create -f clusterip.yaml`.
 
 - check `service` by `kubectl get service` or `kubectl describe svc [service name]` or `kubectl describe service`
@@ -539,7 +537,7 @@ Pay attention to the `Cluster-IP`, they should be the same as the ip address you
 
 - create `.yaml` file
 
-  ```bash
+  ```yaml
   apiVersion: v1
   kind:  Service
   metadata:
