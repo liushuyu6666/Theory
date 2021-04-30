@@ -1,6 +1,6 @@
-# Java
+# Java Data Structure
 
-## base data structure and build-in method
+## build-in data structure
 
 ### String
 
@@ -9,6 +9,26 @@
 ```java
 String s = "aabfc";
 s.length();
+```
+
+### Array
+
+#### new
+
+```java
+int[] array = new int[size];
+```
+
+#### sort
+
+```java
+Arrays.sort(array); // sort in-place
+```
+
+#### fill
+
+```java
+Arrays.fill(array, 0); // fill or element to 0
 ```
 
 
@@ -25,6 +45,22 @@ List<String> l = new ArrayList<>();
 
 ```java
 l.size()
+```
+
+#### list to array
+
+```java
+int[] array = new int[l.size()];
+int i = 0;
+for(int lnum:l){
+    array[i] = lnum;
+}
+```
+
+#### shuffle
+
+```java
+Collections.shuffle(l);
 ```
 
 
@@ -75,10 +111,96 @@ map.containsValue(5);
 #### new
 
 ```java
-Set<String> s = new HashSet<>();
+Set<Integer> set1 = new HashSet<>();
+```
+
+#### contains
+
+```java
+set1.contains(1); // true or false
+```
+
+#### array to set
+
+```java
+int[] array = new int[]{1, 2, 10, 10};
+Integer[] arrayInteger = new Integer[array.length];
+for(int i = 0; i < array.length; i++){
+    arrayInteger[i] = array[i];
+}
+set1.addAll(Arrays.asList(arrayInteger));
+```
+
+#### add
+
+```java
+Set<Integer> set2 = new HashSet<>();
+for(int i = 0; i < 5; i++){
+    set2.add(i);
+}
+```
+
+#### union
+
+```java
+Set<Integer> union = new HashSet<>(set1);
+union.addAll(set2);
+```
+
+#### intersection
+
+```java
+Set<Integer> intersection = new HashSet<>(set1);
+intersection.retainAll(set2);
+```
+
+### `Stack`
+
+#### iterator
+
+```java
+Iterator iter = stack.iterator();
+int curr;
+while(iter.hasNext()){
+    curr = (int)iter.next();
+}
 ```
 
 
+
+### `Queue`
+
+#### new
+
+```java
+Queue<Integer> q = new LinkedList<>();
+```
+
+#### poll
+
+```java
+q.poll()
+```
+
+- first in first out
+- if q is empty, return null;
+
+## nested data structure
+
+### Array
+
+#### new
+
+```java
+Set<Character>[] setArray = new HashSet[9]; // now you have 9 Set pointers points to null
+for(int i = 0; i < 9; i++){
+    setArray[i] = new HashSet<Character>();
+}
+```
+
+
+
+# Java Theoretical Knowledge
 
 ## catalog
 
