@@ -11,6 +11,20 @@ String s = "aabfc";
 s.length();
 ```
 
+#### substring
+
+```java
+s.substring(0, 1) // "a"
+```
+
+#### split
+
+```java
+List<String> list = Arrays.asList(data.split(","));
+```
+
+
+
 ### Array
 
 #### new
@@ -31,20 +45,104 @@ Arrays.sort(array); // sort in-place
 Arrays.fill(array, 0); // fill or element to 0
 ```
 
+#### convert to `ArrayList`
+
+```java
+Arrays.asList(1, 2, 3);
+```
+
+#### 
 
 
-### `ArrayList`
+
+### LinkedList
+
+| type |            method            | return  | expression |
+| :--: | :--------------------------: | :-----: | :--------: |
+| add  |         list.add(1)          | boolean |            |
+| add  | list.add(int idx, int value) |  void   |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+|      |                              |         |            |
+
+
+
+#### add
+
+```java
+list.add(3); // add at the end, return boolean
+list.add(int index, int value); // add at a certain position
+```
+
+
+
+#### get
+
+```java
+list.get(int index);
+list.pop();
+
+list.getLast();
+```
+
+#### delete
+
+#### convert to array
+
+```java
+// nested
+list.toArray(new int[]ist.size()][2]);
+```
+
+### ArrayList
 
 #### new
 
 ```java
 List<String> l = new ArrayList<>();
+List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
 ```
 
 #### length
 
 ```java
 l.size()
+```
+
+#### add
+
+```java
+l.add(index, number);
+```
+
+#### get
+
+```java
+l.get(index);
 ```
 
 #### list to array
@@ -63,9 +161,36 @@ for(int lnum:l){
 Collections.shuffle(l);
 ```
 
+#### slice a `ArrayList`
+
+```java
+l.subList(0, 3);
+```
+
+#### convert to `set`
+
+```java
+Set<Integer> set = new HashSet<>(l);
+```
+
+#### sort
+
+```java
+Collections.sort(l, Collections.reverseOrder());
+```
+
+#### iterator
+
+```java
+Iterator<Integer> iter = l.iterator();
+while(iter.hasNext()){
+    System.out.println(iter.next());
+}
+```
 
 
-### `HashMap`
+
+### HashMap
 
 #### new
 
@@ -104,9 +229,18 @@ map.containsKey(1);
 map.containsValue(5);
 ```
 
+#### traverse
+
+```java
+for(Map.Entry<Integer, Integer> entry : map.entrySet()){
+    entry.getKey();
+    entry.getValue();
+}
+```
 
 
-### `HashSet`
+
+### HashSet
 
 #### new
 
@@ -154,6 +288,14 @@ Set<Integer> intersection = new HashSet<>(set1);
 intersection.retainAll(set2);
 ```
 
+#### convert to `List`
+
+```java
+List<Integer> list = new ArrayList<>(set1);
+```
+
+
+
 ### `Stack`
 
 #### iterator
@@ -184,6 +326,17 @@ q.poll()
 
 - first in first out
 - if q is empty, return null;
+
+### random
+
+```java
+Random rand = new Random(); //instance of random class
+int upperbound = 25;
+//generate random values from 0-24
+int int_random = rand.nextInt(upperbound); 
+```
+
+
 
 ## nested data structure
 
