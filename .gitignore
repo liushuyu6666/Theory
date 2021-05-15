@@ -1,2 +1,5 @@
 # all ppt
 **/*.pptx
+
+# all excel
+**/*.xlsx
