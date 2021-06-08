@@ -37,6 +37,8 @@ click on the icon to load the new dependency.
 
 ## annotation
 
+
+
 ### `@Bean`
 
 To declare a bean, simply annotate a method with the `@Bean` annotation. When JavaConfig encounters such a method, it will execute that method and register the return value as a bean within a `BeanFactory`. By default, the bean name will be the same as the method name. 
@@ -104,3 +106,13 @@ To declare a bean, simply annotate a method with the `@Bean` annotation. When Ja
 
 - what is bean
 - what is IoC container
+
+## Bean
+
+### Intuition
+
+When the program start, beans (annotated as `@Entity`, `@Service`, `Component`, etc ) will be initialized in the memory, when we use `Autowired`, it refers its instance but will not create a new one.
+
+### Java Bean and Spring Boot Bean
+
+[click here](https://stackoverflow.com/questions/21866571/difference-between-javabean-and-spring-bean)

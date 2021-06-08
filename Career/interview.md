@@ -1,8 +1,14 @@
 # Docker
 
+
+
 ## container
 
 **what is container, what's the difference between container and virtual machine?**
+
+
+
+
 
 container could be treated as a software that packaged up executable code and its dependencies or necessary libraries so that application can be ran on multiple different computing environment.
 

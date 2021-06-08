@@ -355,6 +355,24 @@ for(int i = 0; i < 9; i++){
 
 # Java Theoretical Knowledge
 
+## POJO and JavaBeans
+
+POJO is a Java object that is bound to no specific framework, and that a JavaBean is a special type of POJO with a strict set of conventions.
+
+### POJO
+
+**A POJO has no naming convention** for our properties and methods.
+
+### JavaBeans
+
+- our properties are private and we expose getters and setters
+- no-argument for deserialization
+- full-argument constructor for serialization
+
+like the `@Entity` we use in the spring boot.
+
+[click here](https://www.baeldung.com/java-pojo-class)
+
 ## catalog
 
 https://beginnersbook.com/2013/05/java-access-modifiers/)

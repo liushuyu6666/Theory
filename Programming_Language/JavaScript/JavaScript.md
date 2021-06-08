@@ -1,5 +1,16 @@
 # JavaScript
 
+## DOM
+
+| function                                 |      |      |
+| ---------------------------------------- | ---- | ---- |
+| document.getElementById                  |      |      |
+| document.getElementsByTagName("body")[0] |      |      |
+| object.getAttribute("href")              |      |      |
+| document.createElement("p")              |      |      |
+
+
+
 ## Data Type
 
 ### convert `array` to `object`
