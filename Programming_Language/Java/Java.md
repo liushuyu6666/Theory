@@ -355,6 +355,79 @@ for(int i = 0; i < 9; i++){
 
 # Java Theoretical Knowledge
 
+## Object-Oriented Programming
+
+### this vs super
+
+|         | this                                                         | super                                                        |
+| ------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| concept | access the current class member, like variables and methods  | access the parent class member, like variables and methods   |
+|         | we can use both this and super in a class except static area (static block or static method) | we can use both this and super in a class except static area (static block or static method) |
+
+|         | this()                                                       | super()                                            |
+| ------- | ------------------------------------------------------------ | -------------------------------------------------- |
+| concept | call constructor in the same class                           | call parent constructor                            |
+| where   | only in a constructor, must be the first statement, constructor chaining | only in a constructor, must be the first statement |
+| caveat  | can't use both of this() and super()                         | can't use both of this() and super()               |
+
+- constructor chaining:
+
+```java
+class Rectangle{
+    private int x;
+    private int y;
+    private int width;
+    private int height;
+    public Rectangle(){
+        this(0, 0); // calls 2nd constructor
+    }
+    public Rectangle(int width, int height){
+        this(0, 0, width, height); // calls 3rd constructor
+    }
+    public Rectangle(int x, int y, int width, int height){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+}
+```
+
+### overloading vs overriding
+
+|             | overloading                                     | overriding                                                |
+| ----------- | ----------------------------------------------- | --------------------------------------------------------- |
+| concept     | same name method with different variables       | in the child class to override method in the parent class |
+| where       | usually in a single class or in the child class | two classes                                               |
+| parameters  | must have different parameters                  | must the same                                             |
+| return type | may have different return types                 | same or covariant type                                    |
+| modifier    | may have different modifier                     | must not have a lower                                     |
+| exception   | may have different exception                    | must not throw a new or broader                           |
+
+- covariant type:
+
+```java
+class Burger{
+    // fields and methods
+}
+class HealthyBurger extends Burger{
+    // fields and methods
+}
+class BurgerFactory{
+    public Burger createBurger(){
+        return new Burger;
+    }
+}
+class HealthyBurgerFactory extends BurgerFactory{
+    @Override
+    public HealthyBurger createBurger(){
+        return new HealthyBurger();
+    }
+}
+```
+
+`Burger` is the parent class of `HealthyBurger`, so this is a covariant type.
+
 ## POJO and JavaBeans
 
 POJO is a Java object that is bound to no specific framework, and that a JavaBean is a special type of POJO with a strict set of conventions.
