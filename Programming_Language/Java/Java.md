@@ -397,7 +397,7 @@ class Rectangle{
 
 |             | overloading                                     | overriding                                                |
 | ----------- | ----------------------------------------------- | --------------------------------------------------------- |
-| concept     | same name method with different variables       | in the child class to override method in the parent class |
+| concept     | same name method with different arguments       | in the child class to override method in the parent class |
 | where       | usually in a single class or in the child class | two classes                                               |
 | parameters  | must have different parameters                  | must the same                                             |
 | return type | may have different return types                 | same or covariant type                                    |
@@ -406,27 +406,29 @@ class Rectangle{
 
 - covariant type:
 
-```java
-class Burger{
-    // fields and methods
-}
-class HealthyBurger extends Burger{
-    // fields and methods
-}
-class BurgerFactory{
-    public Burger createBurger(){
-        return new Burger;
-    }
-}
-class HealthyBurgerFactory extends BurgerFactory{
-    @Override
-    public HealthyBurger createBurger(){
-        return new HealthyBurger();
-    }
-}
-```
+  ```java
+  class Burger{
+      // fields and methods
+  }
+  class HealthyBurger extends Burger{
+      // fields and methods
+  }
+  class BurgerFactory{
+      public Burger createBurger(){
+          return new Burger;
+      }
+  }
+  class HealthyBurgerFactory extends BurgerFactory{
+      @Override
+      public HealthyBurger createBurger(){
+          return new HealthyBurger();
+      }
+  }
+  ```
 
-`Burger` is the parent class of `HealthyBurger`, so this is a covariant type.
+  `Burger` is the parent class of `HealthyBurger`, so this is a covariant type.
+
+- The `@Override` annotation does not make any difference to your production code. In fact, the annotation is not even encoded in the java byte code of your class. You'll notice that if you add the `@Override` annotation to a method that is not overriding a parent method, then you'll get a compilation error.
 
 ## POJO and JavaBeans
 
