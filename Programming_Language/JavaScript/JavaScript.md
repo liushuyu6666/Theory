@@ -188,3 +188,7 @@ We use `setTimeout()` to stimulate asynchronous `Promise`.
 
   - `hisPromise` executes after `console.log("hello")`.
 
+### `async` and `await`
+
+check it here [`async` and `await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
+
