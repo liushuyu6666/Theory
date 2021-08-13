@@ -192,3 +192,49 @@ We use `setTimeout()` to stimulate asynchronous `Promise`.
 
 check it here [`async` and `await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
 
+
+
+## Operands
+
+### `||` logical OR
+
+```javascript
+expr1 || expr2
+```
+
+- If `expr1` can be converted to `true`, returns `expr1`; else, returns `expr2`.
+- Examples of expressions that can be converted to false are:
+  - `null`;
+  - `NaN`;
+  - `0`;
+  - empty string (`""` or `''` or ````);
+  - `undefined`.
+- `expr1 || ''` convert `falsy` value to `''`
+
+### `&&` logical AND
+
+```javascript
+expr1 && expr2
+```
+
+- If `expr1` can be converted to `true`, returns `expr2`; else, returns `expr1`.
+- Examples of expressions that can be converted to false are:
+  - `null`;
+  - `NaN`;
+  - `0`;
+  - empty string (`""` or `''` or ````);
+  - `undefined`.
+
+### `||` and `&&` chain
+
+```javascript
+expr1 && expr2 || ''
+```
+
+- `yourHead.hair && yourHead.hair.color || ''` if you have hair, return its color, if not, return `''`
+- `users && user[0] || null` if `users` is null, return null, else return the first user.
+
+## Map
+
+### function in map
+
