@@ -1,7 +1,39 @@
+
+
+[Theoretical Knowledge](#theoretical-knowledge)
+  - [concepts](#concepts)
+    - [virtual machine](#virtual-machine)
+    - [Container](#container)
+    - [difference between VM and container](#difference-between-vm-and-container)
+    - [`Docker`](#docker)
+    - [`Docker Daemon`](#docker-daemon)
+    - [`Docker image`](#docker-image)
+  - [comparison](#comparison)
+    - [different between VM image and docker image](#different-between-vm-image-and-docker-image)
+- [Theoretical Knowledge](#theoretical-knowledge)
+  - [concepts](#concepts)
+    - [virtual machine](#virtual-machine)
+    - [Container](#container)
+    - [difference between VM and container](#difference-between-vm-and-container)
+    - [`Docker`](#docker)
+    - [`Docker Daemon`](#docker-daemon)
+    - [`Docker image`](#docker-image)
+  - [comparison](#comparison)
+    - [different between VM image and docker image](#different-between-vm-image-and-docker-image)
+- [Lab](#lab)
+  - [start - build, pull and run](#start---build-pull-and-run)
+  - [check the containers](#check-the-containers)
+  - [go into `container`](#go-into-container)
+  - [network](#network)
+  - [commit and push](#commit-and-push)
+    - [create account](#create-account)
+    - [commit](#commit)
+    - [login](#login)
+    - [tag](#tag)
+    - [push](#push)
+  - [remove the container](#remove-the-container)
+
 # Theoretical Knowledge
-
-[TOC]
-
 
 ## concepts
 
