@@ -8,4 +8,4 @@
 5. activate it by use `source venv/bin/activate`
 6. create a new python file .py
 7. install packages `pip3 install pymongo`
-8. permission `sudo chmod x+u <file_name>`
+8. permission `sudo chmod u+x <file_name>`
